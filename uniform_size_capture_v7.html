@@ -1,0 +1,498 @@
+<!-- Uniform size collection v7 — top-level Stitched vs Material-only choice — (Aynivra Digital) -->
+<!-- NOTE: Enrich palette used for demo. Final logo/branding pending Enrich sign-off. -->
+<!-- Men's cut and Both-sets buttons are retained in DOM but hidden (data-hidden). Women's cut auto-selected. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#1A1A1A; --paper:#FFFFFF; --wash:#F6F6F7; --card:#FFFFFF;
+    --red:#E6003D; --red-dark:#C10033; --line:#E4E4E7; --muted:#6B6B70; --ok:#1F7A4D;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--wash);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:480px;margin:0 auto;min-height:100vh;background:var(--paper)}
+
+  header{background:var(--ink);color:#fff;padding:18px 20px 20px}
+  .brand{display:flex;align-items:baseline;gap:8px}
+  .brand .logo{font-family:Poppins,sans-serif;font-weight:600;font-size:22px;letter-spacing:-.01em}
+  .brand .logo b{color:var(--red)}
+  .brand .tag{font-size:11px;color:#B8B8BC;font-weight:400}
+  .htitle{margin-top:20px}
+  .htitle h1{font-family:Poppins,sans-serif;font-size:22px;font-weight:600;line-height:1.2}
+  .htitle p{font-size:13.5px;color:#C9C9CE;margin-top:7px;line-height:1.5}
+  .pending{margin-top:14px;font-size:10.5px;color:#8A8A90;border-top:1px solid #2E2E30;padding-top:10px}
+
+  main{padding:20px}
+  .step{margin-bottom:26px}
+  .steplab{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+  .num{font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#fff;background:var(--red);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .steplab h2{font-size:15px;font-weight:600;letter-spacing:-.01em}
+  .note{font-size:12px;color:var(--muted);margin:-4px 0 12px;line-height:1.5}
+
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+  select,input,textarea{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-family:inherit;font-size:16px;color:var(--ink)}
+  select:focus,input:focus,textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(230,0,61,.12)}
+  .field{margin-bottom:13px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:380px){.row{grid-template-columns:1fr}}
+
+  .setpick{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .setpick button{padding:14px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-family:inherit;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer}
+  .setpick button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .setpick button.wide{grid-column:1 / -1;font-size:13px;font-weight:400;color:var(--muted)}
+  .setpick button.wide[aria-pressed="true"]{color:#fff}
+  .setpick button[data-hidden]{display:none}          /* men's + both hidden, kept in DOM */
+
+  /* category grouping */
+  .catwrap{margin-bottom:22px}
+  .cathead{font-family:Poppins,sans-serif;font-size:13px;font-weight:600;color:var(--ink);margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .cathead:before{content:"";width:14px;height:2px;background:var(--red);border-radius:2px}
+  .catsub{font-size:11.5px;color:var(--muted);margin-bottom:12px}
+
+  .garments{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .garment{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+  .garment[data-on="1"]{border-color:var(--red);box-shadow:0 0 0 1px var(--red)}
+  .gtop{width:100%;padding:12px;background:none;border:0;font-family:inherit;text-align:left;cursor:pointer;display:block}
+  .gtop figure{background:var(--wash);border-radius:8px;height:84px;display:flex;align-items:center;justify-content:center;margin-bottom:9px;position:relative}
+  .gtop figure svg{width:42px;height:54px}
+  .gtop figure em{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;border:1px solid #C9C9CE;background:var(--card);font-style:normal;font-size:12px;line-height:18px;text-align:center;color:transparent}
+  .garment[data-on="1"] .gtop figure em{background:var(--red);border-color:var(--red);color:#fff}
+  .gtop b{display:block;font-size:13px;font-weight:600;line-height:1.25}
+  .gtop span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+
+  .gbody{display:none;padding:0 12px 12px;border-top:1px solid var(--line)}
+  .garment[data-on="1"] .gbody{display:block}
+  .glab{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:11px 0 8px}
+
+  /* top-level Stitched vs Material choice */
+  .choice{display:grid;grid-template-columns:1fr;gap:10px}
+  .choice button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:15px 16px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);font-family:inherit;cursor:pointer;text-align:left}
+  .choice button .mt{font-size:15px;font-weight:600;color:var(--ink)}
+  .choice button .md{font-size:12px;color:var(--muted);font-weight:400;line-height:1.45}
+  .choice button[aria-pressed="true"]{border-color:var(--red);background:#FFF5F8}
+  .choice button[aria-pressed="true"] .mt{color:var(--red-dark)}
+  /* material-only panel */
+  #materialpanel{display:none;margin-top:4px}
+  .matbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .matbox .big{display:flex;align-items:center;gap:10px;margin-top:4px}
+  .matbox .big input{font-family:Poppins,sans-serif;font-size:22px;font-weight:600;text-align:center;max-width:130px}
+  .matbox .unit{font-size:14px;color:var(--muted);font-weight:500}
+  .mathint{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+
+  .qty{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--wash);border:1px solid var(--line);border-radius:9px;padding:5px}
+  .qty button{width:34px;height:34px;border:1px solid var(--line);border-radius:7px;background:var(--card);font-family:inherit;font-size:18px;line-height:1;color:var(--ink);cursor:pointer;flex:none}
+  .qty button:disabled{color:var(--line);cursor:not-allowed}
+  .qty b{font-family:Poppins,sans-serif;font-size:17px;font-weight:600;flex:1;text-align:center}
+
+  .chips{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+  .chip{padding:11px 4px;border:1px solid var(--line);border-radius:8px;background:var(--card);font-family:Poppins,sans-serif;font-weight:600;font-size:14px;color:var(--ink);cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chips.len .chip{font-size:13px}
+  .gunsure{width:100%;margin-top:7px;padding:11px;border:1px dashed var(--muted);border-radius:8px;background:none;font-family:inherit;font-size:12px;color:var(--muted);cursor:pointer}
+  .gunsure[aria-pressed="true"]{border-style:solid;border-color:var(--red);color:var(--red);font-weight:600}
+  .gmeasure{display:none;margin-top:9px}
+  .gmeasure input{padding:10px;font-size:14px}
+  .gmeasure label{font-size:10.5px}
+
+  /* in stitched mode every opened garment simply shows its size block */
+  .sizeblock{display:block}
+  .lenblock{display:none}
+  .lenhint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.45}
+
+  .chart{margin-top:6px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px}
+  .chart h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;font-weight:600;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+  td{padding:7px 0;border-bottom:1px solid var(--wash)}
+  tr:last-child td{border:0}
+  td:first-child{font-family:Poppins,sans-serif;font-weight:600}
+
+  .summary{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:14px;display:none}
+  .summary h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;font-weight:600}
+  .lines .line{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:9px 0;border-bottom:1px solid var(--wash)}
+  .lines .line:last-child{border-bottom:0}
+  .lines .k{color:var(--muted);font-size:13px;flex:1;min-width:0}
+  .lines .v{font-size:13px;font-weight:600;text-align:right;flex:none;max-width:58%}
+  .lines .total{border-top:1px solid var(--line);border-bottom:0;margin-top:4px;padding-top:11px}
+  .lines .total .k{color:var(--ink);font-weight:600}
+  .lines .total .v{font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--red)}
+  .tagm{display:inline-block;font-size:10px;font-weight:600;color:var(--red);border:1px solid var(--red);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+
+  .submit{width:100%;padding:16px;background:var(--red);color:#fff;border:0;border-radius:10px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:background .15s}
+  .submit:hover:not(:disabled){background:var(--red-dark)}
+  .submit:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+  .hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:11px;line-height:1.5}
+
+  #done{display:none;padding:52px 20px 40px;text-align:center}
+  #done .tick{width:54px;height:54px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:27px}
+  #done h2{font-family:Poppins,sans-serif;font-size:23px;font-weight:600;margin-bottom:10px}
+  #done .lede{font-size:14px;color:var(--muted);line-height:1.6;max-width:320px;margin:0 auto}
+  .receipt{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:16px;text-align:left}
+  .receipt h3{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;font-weight:600}
+  .receipt .sect{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:13px 0 3px;border-top:1px solid var(--line);margin-top:9px}
+  .dl{display:inline-block;margin-top:18px;padding:12px 22px;border:1px solid var(--ink);border-radius:9px;font-size:13px;font-weight:600;color:var(--ink);background:none;cursor:pointer;font-family:inherit}
+
+  footer{padding:20px;text-align:center;font-size:11px;color:var(--muted);border-top:1px solid var(--line)}
+  footer b{color:var(--ink);font-weight:600}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <span class="logo">en<b>&#10084;</b>rich</span>
+      <span class="tag">love begins with you</span>
+    </div>
+    <div class="htitle">
+      <h1>Your uniform sizes</h1>
+      <p>Choose stitched uniforms or material only, then tell us the details. About two minutes.</p>
+    </div>
+    <p class="pending">Uniform sizing programme &middot; please complete once</p>
+  </header>
+
+  <main id="form">
+    <section class="step">
+      <div class="steplab"><span class="num">1</span><h2>About you</h2></div>
+      <div class="row">
+        <div class="field"><label for="fname">First name</label><input id="fname" placeholder="First name" autocomplete="given-name"></div>
+        <div class="field"><label for="lname">Last name</label><input id="lname" placeholder="Last name" autocomplete="family-name"></div>
+      </div>
+      <div class="field"><label for="ecode">Employee code</label><input id="ecode" placeholder="As on your ID card"></div>
+      <div class="row">
+        <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email"></div>
+        <div class="field"><label for="phone">Phone</label><input id="phone" placeholder="10 digits" autocomplete="tel" inputmode="numeric"></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="steplab"><span class="num">2</span><h2>Where you work</h2></div>
+      <div class="field">
+        <label for="branch">Branch</label>
+        <select id="branch">
+          <option value="">Select your branch</option>
+          <option>Bandra West — Mumbai</option>
+          <option>Andheri Lokhandwala — Mumbai</option>
+          <option>Powai — Mumbai</option>
+          <option>Koregaon Park — Pune</option>
+          <option>Indiranagar — Bengaluru</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Uniform set: retained in DOM, men's + both hidden. Women's auto-selected on load. -->
+    <section class="step" style="display:none" id="setstep">
+      <div class="steplab"><span class="num">·</span><h2>Which uniform set</h2></div>
+      <div class="setpick" id="setpick">
+        <button aria-pressed="true" data-set="women">Women's cut</button>
+        <button aria-pressed="false" data-set="men" data-hidden>Men's cut</button>
+        <button class="wide" aria-pressed="false" data-set="both" data-hidden>Show me both sets</button>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="steplab"><span class="num">3</span><h2>What do you need?</h2></div>
+      <div class="choice" id="choice">
+        <button type="button" aria-pressed="false" onclick="setChoice('stitched',this)">
+          <span class="mt">Stitched uniforms</span>
+          <span class="md">We make your uniform to your size. Pick your garments and sizes below.</span>
+        </button>
+        <button type="button" aria-pressed="false" onclick="setChoice('material',this)">
+          <span class="mt">Material only</span>
+          <span class="md">We give you the cloth and you get the whole uniform stitched elsewhere. Just tell us the total length.</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="step" id="materialpanel">
+      <div class="steplab"><span class="num">4</span><h2>How much material</h2></div>
+      <div class="matbox">
+        <label for="matlen">Total length needed</label>
+        <div class="big">
+          <input id="matlen" inputmode="decimal" placeholder="0" oninput="check()">
+          <span class="unit">metres</span>
+        </div>
+        <p class="mathint">Enter the total metres of material you need for your full uniform. If you're not sure how much, check with your branch manager before submitting.</p>
+      </div>
+    </section>
+
+    <section class="step" id="garmentwrap" style="display:none">
+      <div class="steplab"><span class="num">4</span><h2>Your garments</h2></div>
+      <p class="note">Tap a garment to add it, then pick a size. Add as many as you need.</p>
+      <div id="cats"></div>
+
+      <div class="chart">
+        <h3>Size chart · inches</h3>
+        <table>
+          <tr><th>Size</th><th>Chest / bust</th><th>Waist</th><th>Length</th></tr>
+          <tr><td>XS</td><td>32</td><td>26</td><td>25</td></tr>
+          <tr><td>S</td><td>34</td><td>28</td><td>26</td></tr>
+          <tr><td>M</td><td>36</td><td>30</td><td>27</td></tr>
+          <tr><td>L</td><td>38</td><td>32</td><td>28</td></tr>
+          <tr><td>XL</td><td>40</td><td>34</td><td>29</td></tr>
+          <tr><td>XXL</td><td>42</td><td>36</td><td>30</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="steplab"><span class="num">4</span><h2>Check and send</h2></div>
+      <div class="summary" id="summary">
+        <h3>Your selection</h3>
+        <div class="lines" id="sumrows"></div>
+      </div>
+      <div class="field">
+        <label for="notes">Fit preferences or alterations (optional)</label>
+        <textarea id="notes" rows="2" placeholder="e.g. prefer longer sleeves"></textarea>
+      </div>
+      <button class="submit" id="submit" disabled>Send my sizes</button>
+      <p class="hint">Goes straight to the uniform team. You can resubmit if something changes.</p>
+    </section>
+  </main>
+
+  <div id="done">
+    <div class="tick">&check;</div>
+    <h2>Sizes recorded</h2>
+    <p class="lede">Thank you. The uniform team has your sizes — nothing else is needed from you.</p>
+    <div class="receipt">
+      <h3>What was sent</h3>
+      <div class="lines" id="recwho"></div>
+      <p class="sect">Garments</p>
+      <div class="lines" id="recgarments"></div>
+    </div>
+    <button class="dl" onclick="window.print()">Save a copy (PDF)</button>
+    <p class="hint" style="margin-top:16px">Mockup — each garment becomes its own row in the uniform sheet.</p>
+  </div>
+
+  <footer>Uniform sizing &middot; powered by <b>Aynivra Digital</b></footer>
+</div>
+
+<script>
+  // ---- placeholder catalogue: 3 tops, 3 bottoms, 3 dresses ----
+  // Replace label values with Enrich's real design names. art = icon shape.
+  const CATALOGUE = [
+    { cat:'Tops', sub:'Choose the designs you need', items:[
+      { id:'top-1', label:'Top design 1', art:'kurta' },
+      { id:'top-2', label:'Top design 2', art:'shirt' },
+      { id:'top-3', label:'Top design 3', art:'tunic' }
+    ]},
+    { cat:'Bottoms', sub:'Choose the designs you need', items:[
+      { id:'bot-1', label:'Bottom design 1', art:'trouser' },
+      { id:'bot-2', label:'Bottom design 2', art:'palazzo' },
+      { id:'bot-3', label:'Bottom design 3', art:'trouser' }
+    ]},
+    { cat:'Dresses', sub:'Choose the designs you need', items:[
+      { id:'drs-1', label:'Dress design 1', art:'dress' },
+      { id:'drs-2', label:'Dress design 2', art:'dress' },
+      { id:'drs-3', label:'Dress design 3', art:'dress' }
+    ]}
+  ];
+
+  // placeholder material lengths — replace with Enrich's real cuts (can be per-category later)
+  const SIZES = ['XS','S','M','L','XL','XXL'];
+  const MAXQ = 6;
+
+  const SVG = {
+    kurta:'<path d="M15 6 L8 12 L5 26 L11 28 L11 54 L35 54 L35 28 L41 26 L38 12 L31 6 L23 12 Z"/><path d="M23 12 L23 34"/>',
+    apron:'<path d="M17 5 L23 10 L29 5"/><path d="M17 5 L14 18 L11 22 L11 52 L35 52 L35 22 L32 18 L29 5"/><path d="M11 30 L35 30"/>',
+    shirt:'<path d="M16 6 L7 11 L4 24 L10 27 L10 54 L36 54 L36 27 L42 24 L39 11 L30 6"/><path d="M16 6 L23 15 L30 6"/>',
+    trouser:'<path d="M12 6 L34 6 L36 54 L26 54 L23 26 L20 54 L10 54 Z"/><path d="M12 13 L34 13"/>',
+    palazzo:'<path d="M13 6 L33 6 L40 54 L26 54 L23 30 L20 54 L6 54 Z"/><path d="M13 13 L33 13"/>',
+    tunic:'<path d="M16 6 L9 12 L6 26 L12 28 L12 50 L34 50 L34 28 L40 26 L37 12 L30 6 L23 13 Z"/><path d="M23 13 L23 30"/><path d="M12 38 L34 38"/>',
+    dress:'<path d="M17 5 L14 14 L8 52 L38 52 L32 14 L29 5 L23 11 Z"/><path d="M17 5 L23 11 L29 5"/>'
+  };
+
+  const picks = {}; // id -> {label, cat, size, unsure, qty, m}  (stitched garments only)
+  let CHOICE = null;   // 'stitched' | 'material'
+  const materialPanel = document.getElementById('materialpanel');
+  const garmentWrap2 = document.getElementById('garmentwrap');
+  const matlenInput = () => document.getElementById('matlen');
+
+  window.setChoice = function(mode, btn){
+    CHOICE = mode;
+    document.querySelectorAll('#choice button').forEach(b => b.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
+    if (mode === 'material'){
+      materialPanel.style.display = 'block';
+      garmentWrap2.style.display = 'none';
+      // clear any stitched picks
+      for (const k in picks) delete picks[k];
+      document.querySelectorAll('.garment[data-on="1"]').forEach(c => c.dataset.on = '0');
+    } else {
+      materialPanel.style.display = 'none';
+      garmentWrap2.style.display = 'block';
+      const mi = matlenInput(); if (mi) mi.value = '';
+    }
+    check();
+  };
+  const labels = {};
+  const cats = document.getElementById('cats');
+  const summary = document.getElementById('summary');
+  const sumrows = document.getElementById('sumrows');
+  const submit = document.getElementById('submit');
+
+  // render catalogue grouped by category
+  cats.innerHTML = CATALOGUE.map(group => `
+    <div class="catwrap">
+      <p class="cathead">${group.cat}</p>
+      <p class="catsub">${group.sub}</p>
+      <div class="garments">
+        ${group.items.map(g => {
+          labels[g.id] = g.label;
+          return `
+          <div class="garment" data-id="${g.id}" data-on="0" data-mode="stitched">
+            <button class="gtop" type="button" onclick="toggleGarment('${g.id}')">
+              <figure><em>&check;</em><svg viewBox="0 0 46 60" fill="none" stroke="#6B6B70" stroke-width="1.6">${SVG[g.art]}</svg></figure>
+              <b>${g.label}</b><span>${group.cat.slice(0,-1)}</span>
+            </button>
+            <div class="gbody">
+              <p class="glab">How many</p>
+              <div class="qty">
+                <button type="button" aria-label="Fewer" onclick="bump('${g.id}',-1)" data-minus disabled>&minus;</button>
+                <b data-q>1</b>
+                <button type="button" aria-label="More" onclick="bump('${g.id}',1)" data-plus>+</button>
+              </div>
+
+              <div class="sizeblock">
+                <p class="glab">Size</p>
+                <div class="chips">${SIZES.map(s => `<button class="chip" type="button" aria-pressed="false" onclick="pickSize('${g.id}','${s}',this)">${s}</button>`).join('')}</div>
+                <button class="gunsure" type="button" aria-pressed="false" onclick="toggleUnsure('${g.id}',this)">Not sure — take measurements</button>
+                <div class="gmeasure">
+                  <div class="row">
+                    <div class="field"><label>Chest / bust</label><input inputmode="decimal" placeholder="in" oninput="setM('${g.id}','chest',this.value)"></div>
+                    <div class="field"><label>Waist</label><input inputmode="decimal" placeholder="in" oninput="setM('${g.id}','waist',this.value)"></div>
+                  </div>
+                  <div class="row">
+                    <div class="field"><label>Length</label><input inputmode="decimal" placeholder="in" oninput="setM('${g.id}','length',this.value)"></div>
+                    <div class="field"><label>Sleeve</label><input inputmode="decimal" placeholder="in" oninput="setM('${g.id}','sleeve',this.value)"></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+
+  function el(id){ return cats.querySelector(`[data-id="${id}"]`); }
+
+  window.toggleGarment = function(id){
+    const card = el(id); const on = card.dataset.on === '1';
+    card.dataset.on = on ? '0' : '1';
+    if (on) delete picks[id];
+    else {
+      const cat = CATALOGUE.find(g => g.items.some(i => i.id===id)).cat;
+      picks[id] = { label:labels[id], cat, size:null, unsure:false, qty:1, m:{} };
+      card.querySelector('[data-q]').textContent = '1';
+      card.querySelector('[data-minus]').disabled = true;
+      card.querySelector('[data-plus]').disabled = false;
+    }
+    check();
+  };
+
+
+  window.bump = function(id, delta){
+    const p = picks[id]; if (!p) return;
+    p.qty = Math.min(MAXQ, Math.max(1, p.qty + delta));
+    const card = el(id);
+    card.querySelector('[data-q]').textContent = p.qty;
+    card.querySelector('[data-minus]').disabled = p.qty === 1;
+    card.querySelector('[data-plus]').disabled = p.qty === MAXQ;
+    check();
+  };
+
+  window.pickSize = function(id, size, btn){
+    const card = el(id);
+    card.querySelectorAll('.sizeblock .chip').forEach(c => c.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
+    picks[id].size = size; picks[id].unsure = false;
+    card.querySelector('.gunsure').setAttribute('aria-pressed','false');
+    card.querySelector('.gmeasure').style.display = 'none';
+    check();
+  };
+
+
+  window.toggleUnsure = function(id, btn){
+    const p = picks[id]; p.unsure = !p.unsure;
+    btn.setAttribute('aria-pressed', p.unsure);
+    el(id).querySelector('.gmeasure').style.display = p.unsure ? 'block' : 'none';
+    if (p.unsure){ p.size = null;
+      el(id).querySelectorAll('.sizeblock .chip').forEach(c => c.setAttribute('aria-pressed','false')); }
+    check();
+  };
+
+  window.setM = function(id, key, val){ picks[id].m[key] = val; };
+
+  const fname=document.getElementById('fname'), lname=document.getElementById('lname'),
+        ecode=document.getElementById('ecode'), email=document.getElementById('email'),
+        phone=document.getElementById('phone'), branch=document.getElementById('branch');
+  [fname,lname,ecode,email,phone,branch].forEach(e2 => e2.addEventListener('input', check));
+
+  function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function complete1(p){ return (!!p.size || p.unsure); }
+  function describe(p){
+    let base = p.unsure ? 'Custom measurements' : (p.size || 'size pending');
+    return p.qty > 1 ? base + ' × ' + p.qty : base;
+  }
+  function line(k, v, isMat, total){
+    return `<div class="line${total?' total':''}"><span class="k">${k}${isMat?'<span class="tagm">MATERIAL</span>':''}</span><span class="v">${v}</span></div>`;
+  }
+
+  function check(){
+    const who = fname.value.trim() && lname.value.trim() && ecode.value.trim()
+      && emailOk(email.value.trim()) && phone.value.trim().length >= 10 && branch.value;
+
+    let pathOk = false;
+    if (CHOICE === 'material'){
+      const v = parseFloat((matlenInput() && matlenInput().value) || '');
+      const ok = !isNaN(v) && v > 0;
+      summary.style.display = ok ? 'block' : 'none';
+      if (ok) sumrows.innerHTML = line('Material only', v + ' metres', true, false) + line('For', 'full uniform, stitched elsewhere', false, false);
+      pathOk = ok;
+    } else if (CHOICE === 'stitched'){
+      const ids = Object.keys(picks);
+      const allOk = ids.length > 0 && ids.every(complete1);
+      if (ids.length){
+        summary.style.display = 'block';
+        const total = ids.reduce((n,id) => n + picks[id].qty, 0);
+        sumrows.innerHTML = ids.map(id => line(labels[id], describe(picks[id]), false, false)).join('')
+          + line('Total items', total, false, true);
+      } else summary.style.display = 'none';
+      pathOk = allOk;
+    } else {
+      summary.style.display = 'none';
+    }
+    submit.disabled = !(who && CHOICE && pathOk);
+  }
+
+  submit.addEventListener('click', () => {
+    document.getElementById('recwho').innerHTML = [
+      line('Name', fname.value + ' ' + lname.value),
+      line('Employee code', ecode.value),
+      line('Branch', branch.value),
+      line('Email', email.value),
+      line('Phone', phone.value),
+      line('Order type', CHOICE === 'material' ? 'Material only' : 'Stitched uniforms'),
+      line('Recorded', new Date().toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}))
+    ].join('');
+    if (CHOICE === 'material'){
+      const v = parseFloat(matlenInput().value);
+      document.querySelector('#done .sect').textContent = 'Material';
+      document.getElementById('recgarments').innerHTML =
+        line('Total length', v + ' metres', true, false)
+        + line('Purpose', 'Full uniform, stitched elsewhere', false, false);
+    } else {
+      const ids = Object.keys(picks);
+      const total = ids.reduce((n,id) => n + picks[id].qty, 0);
+      document.getElementById('recgarments').innerHTML =
+        ids.map(id => line(labels[id], describe(picks[id]), false, false)).join('')
+        + line('Total', total, false, true);
+    }
+    document.getElementById('form').style.display = 'none';
+    document.querySelector('header').style.display = 'none';
+    document.getElementById('done').style.display = 'block';
+    window.scrollTo(0,0);
+  });
+</script>
