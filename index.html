@@ -1,9 +1,12 @@
-<!-- Uniform size collection v8 — with Google Sheets integration via Apps Script -->
-<!-- GitHub Image: https://raw.githubusercontent.com/Aynivra-Ai/Unifrom/main/images/Image-1-.jpg -->
+<!-- Uniform size collection v9 — top-level Stitched vs Material-only choice — (Aynivra Digital) -->
+<!-- Branding: Enrich wordmark + tagline in the brand bar. See the LOGO block in the markup. -->
+<!-- Garment artwork: edit the IMAGES block at the top of the script to drop in real photos. -->
+<!-- Men's cut and Both-sets buttons are retained in DOM but hidden (data-hidden). Women's cut auto-selected. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+  /* 300 added for the light logo wordmark */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
   :root {
     --ink: #1A1A1A;
@@ -43,27 +46,69 @@
     padding: 18px 20px 20px
   }
 
-  .brand {
-    display: flex;
-    align-items: baseline;
-    gap: 8px
+  /* ── Brand bar ─────────────────────────────────────────────────────
+     Self-contained logo: no external image, nothing to host.
+     See the LOGO block in the markup below to swap in real artwork. */
+  .brandbar {
+    background: #fff;
+    padding: 26px 20px 21px;
+    text-align: center;
+    border-bottom: 1px solid var(--line)
   }
 
-  .brand .logo {
+  .brandbar .logoimg {
+    display: block;
+    width: auto;
+    max-width: 200px;
+    max-height: 74px;
+    margin: 0 auto
+  }
+
+  .wordmark {
+    display: inline-block;
     font-family: Poppins, sans-serif;
-    font-weight: 600;
-    font-size: 22px;
-    letter-spacing: -.01em
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: .045em;
+    color: #141414
   }
 
-  .brand .logo b {
-    color: var(--red)
+  .wordmark .i {
+    position: relative;
+    display: inline-block;
+    line-height: 1
   }
 
-  .brand .tag {
+  .wordmark .i svg {
+    position: absolute;
+    left: 50%;
+    top: -.27em;
+    transform: translateX(-50%);
+    width: .31em;
+    height: .28em;
+    fill: var(--red)
+  }
+
+  .brandbar .tagline {
+    display: block;
+    margin-top: 10px;
+    font-family: Poppins, sans-serif;
+    font-weight: 300;
     font-size: 11px;
-    color: #B8B8BC;
-    font-weight: 400
+    letter-spacing: .17em;
+    color: #6A6A6F
+  }
+
+  @media(max-width:380px) {
+    .wordmark {
+      font-size: 34px
+    }
+
+    .brandbar .tagline {
+      font-size: 10px;
+      letter-spacing: .14em
+    }
   }
 
   .htitle {
@@ -218,6 +263,9 @@
     display: none
   }
 
+  /* men's + both hidden, kept in DOM */
+
+  /* category grouping */
   .catwrap {
     margin-bottom: 22px
   }
@@ -277,28 +325,46 @@
     display: block
   }
 
+  /* Every garment card is the same size, whatever art it carries. */
   .gtop figure {
     background: var(--wash);
     border-radius: 8px;
-    height: 84px;
+    height: 112px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 9px;
-    position: relative
+    position: relative;
+    overflow: hidden
   }
 
   .gtop figure svg {
-    width: 42px;
-    height: 54px
+    width: 46px;
+    height: 60px
   }
 
+  /* two-view flat: 140 x 124 viewBox, scaled to the same box as everything
+     else so a front-and-back design doesn't change the card's footprint */
+  .gtop figure svg.wide {
+    width: 126px;
+    height: 112px
+  }
+
+  /* real artwork from the IMAGES block — never crop, never distort */
   .gtop figure img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
-    display: block
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    /* technical flats ship on a white ground; multiply drops it into the tile */
+    mix-blend-mode: multiply
+  }
+
+  /* a missing/blocked image must not leave a torn-looking card */
+  .gtop figure img[data-broken] {
+    display: none
   }
 
   .gtop figure em {
@@ -356,6 +422,7 @@
     margin: 11px 0 8px
   }
 
+  /* top-level Stitched vs Material choice */
   .choice {
     display: grid;
     grid-template-columns: 1fr;
@@ -398,6 +465,7 @@
     color: var(--red-dark)
   }
 
+  /* material-only panel */
   #materialpanel {
     display: none;
     margin-top: 4px
@@ -524,6 +592,7 @@
     font-weight: 600
   }
 
+  /* "Not sure — take measurements" disabled per request. Kept in DOM; remove this rule to re-enable. */
   .gunsure,
   .gmeasure {
     display: none !important
@@ -543,6 +612,7 @@
     font-size: 10.5px
   }
 
+  /* in stitched mode every opened garment simply shows its size block */
   .sizeblock {
     display: block
   }
@@ -702,47 +772,10 @@
     background: var(--red-dark)
   }
 
-  /* The button is never greyed out — it always looks like a button.
-     If the form is incomplete, clicking shows the checklist below. */
   .submit:disabled {
-    background: var(--muted);
-    color: #fff;
-    cursor: wait
-  }
-
-  .submit.loading {
-    background: var(--muted)
-  }
-
-  .todo {
-    display: none;
-    background: #FFF5F8;
-    border: 1px solid var(--red);
-    border-radius: 10px;
-    padding: 13px 15px;
-    margin-bottom: 13px
-  }
-
-  .todo.show {
-    display: block
-  }
-
-  .todo b {
-    display: block;
-    font-size: 12.5px;
-    color: var(--red-dark);
-    margin-bottom: 7px
-  }
-
-  .todo ul {
-    margin: 0;
-    padding-left: 18px
-  }
-
-  .todo li {
-    font-size: 12.5px;
-    color: var(--ink);
-    line-height: 1.7
+    background: var(--line);
+    color: var(--muted);
+    cursor: not-allowed
   }
 
   .hint {
@@ -751,6 +784,67 @@
     text-align: center;
     margin-top: 11px;
     line-height: 1.5
+  }
+
+  /* shown only when the send to Google Sheets fails */
+  .senderr {
+    display: none;
+    background: #FFF5F8;
+    border: 1px solid var(--red);
+    border-radius: 10px;
+    padding: 13px 14px;
+    margin-bottom: 12px
+  }
+
+  .senderr b {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--red-dark);
+    margin-bottom: 4px
+  }
+
+  .senderr span {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5
+  }
+
+  .senderr code {
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-word
+  }
+
+  /* While sending, the button stays branded and readable. It is disabled to
+     block a second tap, but :disabled alone painted it grey-on-grey, which
+     read as "broken" rather than "working" — so both colours are restated
+     here, and :disabled is matched too so this always wins. */
+  .submit[data-sending],
+  .submit[data-sending]:disabled {
+    background: var(--red-dark);
+    color: #fff;
+    cursor: progress
+  }
+
+  .submit[data-sending]::before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 9px;
+    vertical-align: -2px;
+    border: 2px solid rgba(255, 255, 255, .4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg)
+    }
   }
 
   #done {
@@ -838,40 +932,64 @@
     border-top: 1px solid var(--line)
   }
 
-  footer b {
+  footer b,
+  footer a {
     color: var(--ink);
     font-weight: 600
   }
 
-  .error-message {
-    display: none;
-    background: #FFE5E5;
-    border: 1px solid var(--red);
-    color: var(--red);
-    padding: 12px 14px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 12px;
-    line-height: 1.5
+  footer a {
+    text-decoration: none;
+    border-bottom: 1px solid var(--line)
   }
 
-  .error-message.show {
-    display: block
+  footer a:hover {
+    border-bottom-color: var(--ink)
   }
 
   @media (prefers-reduced-motion:reduce) {
     * {
       transition: none !important
     }
+
+    /* the spinner is the only sign the form is working, so slow it rather
+       than stopping it */
+    .submit[data-sending]::before {
+      animation-duration: 2.4s
+    }
   }
 </style>
 
 <div class="wrap">
+  <!-- ═══ LOGO ═══════════════════════════════════════════════════════════
+       This is a built-in SVG/text wordmark — it needs NO hosting and no
+       image file. The page stays a single self-contained .html.
+
+       To use the real Enrich artwork instead, delete the two <span> lines
+       inside .brandbar below and un-comment ONE of these:
+
+       (A) Embedded image — still one file, still works offline. Convert the
+           logo PNG to base64 (e.g. base64.guru / `base64 -w0 logo.png`) and
+           paste it after "base64,":
+           <img class="logoimg" alt="Enrich — love begins with you"
+                src="data:image/png;base64,PASTE_THE_BASE64_STRING_HERE">
+
+       (B) Hosted image — only if the file is already on a public web server.
+           Must be a DIRECT image link ending in .png/.svg (Google Drive and
+           Dropbox share links will NOT render):
+           <img class="logoimg" alt="Enrich — love begins with you"
+                src="https://your-site.com/enrich-logo.png">
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="brandbar">
+    <span class="wordmark" role="img" aria-label="Enrich">enr<span class="i" aria-hidden="true">&#305;<svg
+          viewBox="0 0 24 22" aria-hidden="true" focusable="false">
+          <path
+            d="M12 21.1C12 21.1 1.6 13.8 1.6 7.5C1.6 4.1 4.3 1.4 7.7 1.4C9.7 1.4 11.3 2.4 12 3.8C12.7 2.4 14.3 1.4 16.3 1.4C19.7 1.4 22.4 4.1 22.4 7.5C22.4 13.8 12 21.1 12 21.1Z" />
+        </svg></span>ch</span>
+    <span class="tagline">love begins with you</span>
+  </div>
+
   <header>
-    <div class="brand">
-      <span class="logo">en<b>&#10084;</b>rich</span>
-      <span class="tag">love begins with you</span>
-    </div>
     <div class="htitle">
       <h1>Your uniform sizes</h1>
       <p>Choose stitched uniforms or material only, then tell us the details. About two minutes.</p>
@@ -880,8 +998,6 @@
   </header>
 
   <main id="form">
-    <div class="error-message" id="errorMsg"></div>
-
     <section class="step">
       <div class="steplab"><span class="num">1</span>
         <h2>About you</h2>
@@ -910,15 +1026,139 @@
         <label for="branch">Branch</label>
         <select id="branch">
           <option value="">Select your branch</option>
-          <option>Bandra West — Mumbai</option>
-          <option>Andheri Lokhandwala — Mumbai</option>
-          <option>Powai — Mumbai</option>
-          <option>Koregaon Park — Pune</option>
-          <option>Indiranagar — Bengaluru</option>
+          <optgroup label="Ahmedabad">
+            <option value="University Area - Ahmedabad">University Area - Ahmedabad</option>
+            <option value="Prahlad Nagar - Ahmedabad">Prahlad Nagar - Ahmedabad</option>
+            <option value="Shymal Circle - Ahmedabad">Shymal Circle - Ahmedabad</option>
+            <option value="Hebatpur - Ahmedabad">Hebatpur - Ahmedabad</option>
+            <option value="Maninagar - Ahmedabad">Maninagar - Ahmedabad</option>
+            <option value="Nikol - Ahmedabad">Nikol - Ahmedabad</option>
+            <option value="Satellite - Ahmedabad">Satellite - Ahmedabad</option>
+            <option value="Science City - Ahmedabad">Science City - Ahmedabad</option>
+            <option value="Shahibaug - Ahmedabad">Shahibaug - Ahmedabad</option>
+            <option value="Sindhu Bhavan - Ahmedabad">Sindhu Bhavan - Ahmedabad</option>
+            <option value="Solitaire - Ahmedabad">Solitaire - Ahmedabad</option>
+            <option value="South Bopal - Ahmedabad">South Bopal - Ahmedabad</option>
+          </optgroup>
+          <optgroup label="Bengaluru">
+            <option value="AECS Layout - Bengaluru">AECS Layout - Bengaluru</option>
+            <option value="Bannerghatta Road - Bengaluru">Bannerghatta Road - Bengaluru</option>
+            <option value="Bellandur - Bengaluru">Bellandur - Bengaluru</option>
+            <option value="JP Nagar 7th Phase - Bengaluru">JP Nagar 7th Phase - Bengaluru</option>
+            <option value="Jayanagar Ashoka Pillar - Bengaluru">Jayanagar Ashoka Pillar - Bengaluru</option>
+            <option value="JP Nagar 5th Phase - Bengaluru">JP Nagar 5th Phase - Bengaluru</option>
+            <option value="RMZ Ecoworld - Bengaluru">RMZ Ecoworld - Bengaluru</option>
+            <option value="Haralur Main Road - Bengaluru">Haralur Main Road - Bengaluru</option>
+            <option value="HSR Layout - Bengaluru">HSR Layout - Bengaluru</option>
+            <option value="Indira Nagar - Bengaluru">Indira Nagar - Bengaluru</option>
+            <option value="K R Puram - Bengaluru">K R Puram - Bengaluru</option>
+            <option value="Kammanahalli - Bengaluru">Kammanahalli - Bengaluru</option>
+            <option value="Koramangala 4th Block - Bengaluru">Koramangala 4th Block - Bengaluru</option>
+            <option value="Koramangala 8th Block - Bengaluru">Koramangala 8th Block - Bengaluru</option>
+            <option value="R T Nagar - Bengaluru">R T Nagar - Bengaluru</option>
+            <option value="Sadashiv Nagar - Bengaluru">Sadashiv Nagar - Bengaluru</option>
+          </optgroup>
+          <optgroup label="Gandhinagar">
+            <option value="Gandhinagar Sargasan - Gandhinagar">Gandhinagar Sargasan - Gandhinagar</option>
+          </optgroup>
+          <optgroup label="Indore">
+            <option value="Indore Phoenix Citadel - Indore">Indore Phoenix Citadel - Indore</option>
+          </optgroup>
+          <optgroup label="Mumbai">
+            <option value="Airoli - Mumbai">Airoli - Mumbai</option>
+            <option value="Andheri (E) Marol Blue Fortuna - Mumbai">Andheri (E) Marol Blue Fortuna - Mumbai</option>
+            <option value="Andheri (E) Tandon Mall - Mumbai">Andheri (E) Tandon Mall - Mumbai</option>
+            <option value="Andheri (W) Four Bunglows - Mumbai">Andheri (W) Four Bunglows - Mumbai</option>
+            <option value="Andheri (W) Lokhandwala Link Palace - Mumbai">Andheri (W) Lokhandwala Link Palace - Mumbai
+            </option>
+            <option value="Andheri (W) Lokhandwala Silver Spring - Mumbai">Andheri (W) Lokhandwala Silver Spring -
+              Mumbai</option>
+            <option value="ANdheri (W) Veera Desai Road - Mumbai">ANdheri (W) Veera Desai Road - Mumbai</option>
+            <option value="Bandra (W) Hill Road - Mumbai">Bandra (W) Hill Road - Mumbai</option>
+            <option value="Bandra (W) Linking Road - Mumbai">Bandra (W) Linking Road - Mumbai</option>
+            <option value="Borivali (W) Factory Lane - Mumbai">Borivali (W) Factory Lane - Mumbai</option>
+            <option value="Borivali (W) Satra Park - Mumbai">Borivali (W) Satra Park - Mumbai</option>
+            <option value="CBD Belapur - Mumbai">CBD Belapur - Mumbai</option>
+            <option value="Chandivali Lake Homes - Mumbai">Chandivali Lake Homes - Mumbai</option>
+            <option value="Chembur (E) Ambedkar Garden - Mumbai">Chembur (E) Ambedkar Garden - Mumbai</option>
+            <option value="Dombivali (E) Xperia Mall - Mumbai">Dombivali (E) Xperia Mall - Mumbai</option>
+            <option value="Ghatkopar (E) Vikrant Circle - Mumbai">Ghatkopar (E) Vikrant Circle - Mumbai</option>
+            <option value="Goregaon (W) Kumud Nagar - Mumbai">Goregaon (W) Kumud Nagar - Mumbai</option>
+            <option value="Goregaon (W) Rustomjee Ozone - Mumbai">Goregaon (W) Rustomjee Ozone - Mumbai</option>
+            <option value="JVLR - Mumbai">JVLR - Mumbai</option>
+            <option value="Kalwa - Mumbai">Kalwa - Mumbai</option>
+            <option value="Kalyan Khadakpada Godrej Hills - Mumbai">Kalyan Khadakpada Godrej Hills - Mumbai</option>
+            <option value="Kandivali (E) Dattani Park - Mumbai">Kandivali (E) Dattani Park - Mumbai</option>
+            <option value="Kandivali (E) Thakur Village - Mumbai">Kandivali (E) Thakur Village - Mumbai</option>
+            <option value="Kandivali (W) S V Road - Mumbai">Kandivali (W) S V Road - Mumbai</option>
+            <option value="Kemps Corner - Mumbai">Kemps Corner - Mumbai</option>
+            <option value="Kharghar Patel Heritage - Mumbai">Kharghar Patel Heritage - Mumbai</option>
+            <option value="Kharghar Sec 34 A - Mumbai">Kharghar Sec 34 A - Mumbai</option>
+            <option value="Khoparkhairane Sec 14 - Mumbai">Khoparkhairane Sec 14 - Mumbai</option>
+            <option value="Kurla (W) Phoenix Mall - Mumbai">Kurla (W) Phoenix Mall - Mumbai</option>
+            <option value="Lamington Road - Mumbai">Lamington Road - Mumbai</option>
+            <option value="Lower Parel Phoenix Palladium - Mumbai">Lower Parel Phoenix Palladium - Mumbai</option>
+            <option value="Malad (W) Infiniti Mall - Mumbai">Malad (W) Infiniti Mall - Mumbai</option>
+            <option value="Malad (W) Inorbit Mall - Mumbai">Malad (W) Inorbit Mall - Mumbai</option>
+            <option value="Matunga Circle - Mumbai">Matunga Circle - Mumbai</option>
+            <option value="Matunga Tulsi Pipe Road - Mumbai">Matunga Tulsi Pipe Road - Mumbai</option>
+            <option value="Mira Road (E) Brahmadev Regency - Mumbai">Mira Road (E) Brahmadev Regency - Mumbai</option>
+            <option value="Mira Road Delta Garden - Mumbai">Mira Road Delta Garden - Mumbai</option>
+            <option value="Mulund (W) LBS Marg - Mumbai">Mulund (W) LBS Marg - Mumbai</option>
+            <option value="Mulund (W) Runwal Greens - Mumbai">Mulund (W) Runwal Greens - Mumbai</option>
+            <option value="Sanpada - Mumbai">Sanpada - Mumbai</option>
+            <option value="Parel Ashok Towers - Mumbai">Parel Ashok Towers - Mumbai</option>
+            <option value="Powai - Mumbai">Powai - Mumbai</option>
+            <option value="Prabhadevi - Mumbai">Prabhadevi - Mumbai</option>
+            <option value="Santacruz (W) Off S V Road - Mumbai">Santacruz (W) Off S V Road - Mumbai</option>
+            <option value="Seawoods - Mumbai">Seawoods - Mumbai</option>
+            <option value="Sion Circle - Mumbai">Sion Circle - Mumbai</option>
+            <option value="Tardeo - Mumbai">Tardeo - Mumbai</option>
+            <option value="Thane (W) Hiranandani Estate - Mumbai">Thane (W) Hiranandani Estate - Mumbai</option>
+            <option value="Thane (W) Hiranandani Meadows - Mumbai">Thane (W) Hiranandani Meadows - Mumbai</option>
+            <option value="Thane (W) Panch Pakhdi - Mumbai">Thane (W) Panch Pakhdi - Mumbai</option>
+            <option value="Thane (W) Viviana Mall - Mumbai">Thane (W) Viviana Mall - Mumbai</option>
+            <option value="Tilak Nagar - Mumbai">Tilak Nagar - Mumbai</option>
+            <option value="Vashi Sector 17 - Mumbai">Vashi Sector 17 - Mumbai</option>
+            <option value="Vikhroli (E) - Mumbai">Vikhroli (E) - Mumbai</option>
+            <option value="Vile Parle (W) S V Road - Mumbai">Vile Parle (W) S V Road - Mumbai</option>
+            <option value="Virar (W) Global City - Mumbai">Virar (W) Global City - Mumbai</option>
+          </optgroup>
+          <optgroup label="Pimpri-Chinchwad">
+            <option value="Wakad - Pimpri-Chinchwad">Wakad - Pimpri-Chinchwad</option>
+          </optgroup>
+          <optgroup label="Pune">
+            <option value="Aundh Pushpak Park - Pune">Aundh Pushpak Park - Pune</option>
+            <option value="Kharadi - Pune">Kharadi - Pune</option>
+            <option value="Koregaon Park - Pune">Koregaon Park - Pune</option>
+            <option value="Mukund Nagar - Pune">Mukund Nagar - Pune</option>
+            <option value="NIBM Tribeca Highstreet - Pune">NIBM Tribeca Highstreet - Pune</option>
+            <option value="Pimple Saudagar - Pune">Pimple Saudagar - Pune</option>
+            <option value="Viman Nagar Phoenix Mall - Pune">Viman Nagar Phoenix Mall - Pune</option>
+            <option value="Wanowrie - Pune">Wanowrie - Pune</option>
+          </optgroup>
+          <optgroup label="Surat">
+            <option value="Canal Road Vesu - Surat">Canal Road Vesu - Surat</option>
+            <option value="Lal Bungalow - Surat">Lal Bungalow - Surat</option>
+            <option value="Mota Varacha - Surat">Mota Varacha - Surat</option>
+            <option value="Wood Square - Surat">Wood Square - Surat</option>
+          </optgroup>
+          <optgroup label="Thane">
+            <option value="Thane (W) Lodha Amara - Mumbai">Thane (W) Lodha Amara - Mumbai</option>
+          </optgroup>
+          <optgroup label="Vadodara">
+            <option value="Alkapuri - Vadodara">Alkapuri - Vadodara</option>
+            <option value="Bhayli - Vadodara">Bhayli - Vadodara</option>
+            <option value="Gotri - Vadodara">Gotri - Vadodara</option>
+            <option value="Inorbit Mall - Vadodara">Inorbit Mall - Vadodara</option>
+            <option value="Manjalpur Eva Mall - Vadodara">Manjalpur Eva Mall - Vadodara</option>
+            <option value="OP Road - Vadodara">OP Road - Vadodara</option>
+          </optgroup>
         </select>
       </div>
     </section>
 
+    <!-- Uniform set: retained in DOM, men's + both hidden. Women's auto-selected on load. -->
     <section class="step" style="display:none" id="setstep">
       <div class="steplab"><span class="num">·</span>
         <h2>Which uniform set</h2>
@@ -970,72 +1210,74 @@
       <div id="cats"></div>
 
       <div class="chart">
-        <h3>Size chart · inches</h3>
+        <h3>Size chart &middot; inches</h3>
         <table>
           <tr>
             <th>Size</th>
-            <th>Chest / bust</th>
-            <th>Waist</th>
-            <th>Length</th>
+            <th>To fit bust</th>
+            <th>To fit waist</th>
+            <th>To fit hip</th>
+          </tr>
+          <tr>
+            <td>XXS</td>
+            <td>30"</td>
+            <td>24"</td>
+            <td>33"</td>
           </tr>
           <tr>
             <td>XS</td>
-            <td>32</td>
-            <td>26</td>
-            <td>25</td>
+            <td>32"</td>
+            <td>26"</td>
+            <td>35"</td>
           </tr>
           <tr>
             <td>S</td>
-            <td>34</td>
-            <td>28</td>
-            <td>26</td>
+            <td>34"</td>
+            <td>28"</td>
+            <td>37"</td>
           </tr>
           <tr>
             <td>M</td>
-            <td>36</td>
-            <td>30</td>
-            <td>27</td>
+            <td>36"</td>
+            <td>30"</td>
+            <td>39"</td>
           </tr>
           <tr>
             <td>L</td>
-            <td>38</td>
-            <td>32</td>
-            <td>28</td>
+            <td>38"</td>
+            <td>32"</td>
+            <td>41"</td>
           </tr>
           <tr>
             <td>XL</td>
-            <td>40</td>
-            <td>34</td>
-            <td>29</td>
+            <td>40"</td>
+            <td>34"</td>
+            <td>43"</td>
           </tr>
           <tr>
-            <td>XXL</td>
-            <td>42</td>
-            <td>36</td>
-            <td>30</td>
+            <td>2XL</td>
+            <td>42"</td>
+            <td>36"</td>
+            <td>45"</td>
           </tr>
         </table>
       </div>
     </section>
 
     <section class="step">
-      <div class="steplab"><span class="num">4</span>
+      <div class="steplab"><span class="num">5</span>
         <h2>Check and send</h2>
       </div>
       <div class="summary" id="summary">
         <h3>Your selection</h3>
         <div class="lines" id="sumrows"></div>
       </div>
-      <div class="field">
-        <label for="notes">Fit preferences or alterations (optional)</label>
-        <textarea id="notes" rows="2" placeholder="e.g. prefer longer sleeves"></textarea>
+      <div class="senderr" id="senderr">
+        <b>Not sent</b>
+        <span id="senderrmsg"></span>
       </div>
-      <div class="todo" id="todo">
-        <b>Before you can send, please:</b>
-        <ul id="todolist"></ul>
-      </div>
-      <button class="submit" id="submit">Send my sizes</button>
-      <p class="hint">Goes straight to the uniform team. You can resubmit if something changes.</p>
+      <button class="submit" id="submit" disabled>Send my sizes</button>
+      <p class="hint">Goes straight to the uniform team.</p>
     </section>
   </main>
 
@@ -1053,58 +1295,181 @@
     <p class="hint" style="margin-top:16px"></p>
   </div>
 
-  <footer>Uniform sizing &middot; powered by <b>Aynivra Digital</b></footer>
+  <footer>Uniform sizing &middot; powered by
+    <a href="https://aynivra.ai/" target="_blank" rel="noopener noreferrer">Aynivra Digital</a>
+  </footer>
 </div>
 
 <script>
-  // Configuration - UPDATE THIS WITH YOUR WEB APP URL
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4Ye6WGel29bunoTz3OKiS9KJpmvURtqwC2oTX-2dpWZ1PNzT6HYDPlX6SXG4S51Qe/exec';
+  // ╔══════════════════════════════════════════════════════════════════╗
+  // ║  WHERE THE DATA GOES — paste your Apps Script URL below          ║
+  // ╚══════════════════════════════════════════════════════════════════╝
+  //
+  // In the Apps Script editor:  Deploy → New deployment → Web app
+  //     Execute as        : Me
+  //     Who has access    : Anyone            ← must be "Anyone", not
+  //                                             "Anyone with Google account",
+  //                                             or staff get a login wall and
+  //                                             the send fails.
+  // Copy the Web app URL it gives you and paste it between the quotes.
+  //
+  // It must end in /exec — a /dev URL only works while YOU are signed in and
+  // will fail for everyone else.
+  //
+  // Re-deploy note: after editing the Apps Script, use Deploy → Manage
+  // deployments → edit → Version: New version. Otherwise the old code keeps
+  // running and rows silently stop appearing.
+  //
+  // The matching server-side code is in apps-script/Code.gs in this repo.
+  //
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4Ye6WGel29bunoTz3OKiS9KJpmvURtqwC2oTX-2dpWZ1PNzT6HYDPlX6SXG4S51Qe/exec';   // ← e.g. 'https://script.google.com/macros/s/AKfycb.../exec'
 
+  // ---- placeholder catalogue: 3 tops, 3 bottoms, 3 dresses ----
+  // Replace label values with Enrich's real design names. art = icon shape.
+  // ╔══════════════════════════════════════════════════════════════════╗
+  // ║  GARMENT IMAGES — the only block you need to edit to add photos  ║
+  // ╚══════════════════════════════════════════════════════════════════╝
+  //
+  // Images live in the Aynivra-Ai/Unifrom repo under images/Products/.
+  // To add one: commit the file to that folder, then put its FILE NAME below.
+  //
+  // ⚠ Use raw.githubusercontent.com, NOT the github.com/.../blob/... address
+  //   you see in the browser. A blob link returns the HTML page, not the file
+  //   (verified: blob → HTTP 403, raw → HTTP 200 image/jpeg), so an <img>
+  //   pointing at it shows a broken icon. IMG_BASE below is already the raw
+  //   form, so just append the file name and it will be correct.
+  //
+  // The repo must stay PUBLIC — raw links from a private repo need a token
+  // and will not load for staff.
+  //
+  // Leave an entry as '' to keep the built-in line drawing for that garment.
+  //
+  // Prefer to embed instead of link? Replace the value with a data URI
+  // ('data:image/jpeg;base64,...'). Bigger file, but then nothing can break it.
+  //
+  const IMG_BASE = 'https://raw.githubusercontent.com/Aynivra-Ai/Unifrom/main/images/Products/';
+
+  const IMAGES = {
+    'top-1': IMG_BASE + 'Belt-Tie-Top.jpeg',                                  // Belt Tie Top
+    'top-2': IMG_BASE + 'Bow-Tie-Top.jpeg',                                  // Belt Tie Top — Both Views
+    'top-3': IMG_BASE + 'Pin-Tucks-Top.jpeg',                                  // Pin Tucks Top
+    'drs-1': IMG_BASE + 'Belt-Tie-Dress.jpeg',                                  // Belt Tie Dress
+    'drs-2': IMG_BASE + 'Mandarin-Collar-Dress.jpeg',                                  // Mandarin Collar Dress
+    'drs-3': IMG_BASE + 'Flare-Dress.jpeg',                                  // Flare Dress
+    'bot-1': IMG_BASE + 'Palazzo-Pants.jpeg',     // Palazzo Pants
+    'bot-2': IMG_BASE + 'Straight-Trousers.jpeg',
+    'bot-3': IMG_BASE + 'A-line-skirt.jpeg'
+  };
+
+  // Design names as supplied by Enrich. `one` is the singular shown on the
+  // card (never derive it by trimming the plural — "Dresses" would give
+  // "Dresse").
   const CATALOGUE = [
     {
-      cat: 'Tops', sub: 'Choose the designs you need', items: [
-        { id: 'top-1', label: 'Top design 1', art: 'kurta', },
-        { id: 'top-2', label: 'Top design 2', art: 'shirt' },
-        { id: 'top-3', label: 'Top design 3', art: 'tunic' }
+      cat: 'Tops', one: 'Top', sub: 'Choose the designs you need', items: [
+        { id: 'top-1', label: 'Belt Tie Top', art: 'kurta' },
+        { id: 'top-2', label: 'Bow Tie Top', art: 'shirt' },
+        { id: 'top-3', label: 'Pin Tucks Top', art: 'tunic' }
       ]
     },
     {
-      cat: 'Bottoms', sub: 'Choose the designs you need', items: [
-        { id: 'bot-1', label: 'Bottom design 1', art: 'trouser' },
-        { id: 'bot-2', label: 'Bottom design 2', art: 'palazzo' },
-        { id: 'bot-3', label: 'Bottom design 3', art: 'trouser' }
+      cat: 'Dresses', one: 'Dress', sub: 'Choose the designs you need', items: [
+        { id: 'drs-1', label: 'Belt Tie Dress', art: 'dress' },
+        { id: 'drs-2', label: 'Mandarin Collar Dress', art: 'mandarin' },
+        { id: 'drs-3', label: 'Flare Dress', art: 'flare' }
       ]
     },
     {
-      cat: 'Dresses', sub: 'Choose the designs you need', items: [
-        { id: 'drs-1', label: 'Dress design 1', art: 'dress' },
-        { id: 'drs-2', label: 'Dress design 2', art: 'dress' },
-        { id: 'drs-3', label: 'Dress design 3', art: 'dress' }
+      cat: 'Trousers', one: 'Trouser', sub: 'Choose the designs you need', items: [
+        { id: 'bot-1', label: 'Palazzo Pants', art: 'palazzo' },
+        { id: 'bot-2', label: 'Straight Trousers', art: 'trouser2view' },
+        { id: 'bot-3', label: 'A line skirt', art: 'trouser3view' }
       ]
     }
   ];
 
-  const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  // placeholder material lengths — replace with Enrich's real cuts (can be per-category later)
+  // Must match the size chart in the markup exactly — same sizes, same
+  // spelling. The chart lists XXS and 2XL, so those are offered too.
+  const SIZES = ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL'];
   const MAXQ = 6;
 
-  const SVG = {
-    kurta: '<path d="M15 6 L8 12 L5 26 L11 28 L11 54 L35 54 L35 28 L41 26 L38 12 L31 6 L23 12 Z"/><path d="M23 12 L23 34"/>',
-    apron: '<path d="M17 5 L23 10 L29 5"/><path d="M17 5 L14 18 L11 22 L11 52 L35 52 L35 22 L32 18 L29 5"/><path d="M11 30 L35 30"/>',
-    shirt: '<path d="M16 6 L7 11 L4 24 L10 27 L10 54 L36 54 L36 27 L42 24 L39 11 L30 6"/><path d="M16 6 L23 15 L30 6"/>',
-    trouser: '<path d="M12 6 L34 6 L36 54 L26 54 L23 26 L20 54 L10 54 Z"/><path d="M12 13 L34 13"/>',
-    palazzo: '<path d="M13 6 L33 6 L40 54 L26 54 L23 30 L20 54 L6 54 Z"/><path d="M13 13 L33 13"/>',
-    tunic: '<path d="M16 6 L9 12 L6 26 L12 28 L12 50 L34 50 L34 28 L40 26 L37 12 L30 6 L23 13 Z"/><path d="M23 13 L23 30"/><path d="M12 38 L34 38"/>',
-    dress: '<path d="M17 5 L14 14 L8 52 L38 52 L32 14 L29 5 L23 11 Z"/><path d="M17 5 L23 11 L29 5"/>'
+  // Built-in line drawings, used whenever IMAGES has no entry for a garment.
+  // `vb` is the viewBox; `wide` marks two-view flats that need a bigger box.
+  const ART = {
+    kurta: {
+      vb: '0 0 46 60',
+      d: '<path d="M15 6 L8 12 L5 26 L11 28 L11 54 L35 54 L35 28 L41 26 L38 12 L31 6 L23 12 Z"/><path d="M23 12 L23 34"/>'
+    },
+    shirt: {
+      vb: '0 0 46 60',
+      d: '<path d="M16 6 L7 11 L4 24 L10 27 L10 54 L36 54 L36 27 L42 24 L39 11 L30 6"/><path d="M16 6 L23 15 L30 6"/>'
+    },
+    tunic: {
+      vb: '0 0 46 60',
+      d: '<path d="M16 6 L9 12 L6 26 L12 28 L12 50 L34 50 L34 28 L40 26 L37 12 L30 6 L23 13 Z"/><path d="M23 13 L23 30"/><path d="M12 38 L34 38"/>'
+    },
+    dress: {
+      vb: '0 0 46 60',
+      d: '<path d="M17 5 L14 14 L8 52 L38 52 L32 14 L29 5 L23 11 Z"/><path d="M17 5 L23 11 L29 5"/>'
+    },
+    // stand collar + straight body
+    mandarin: {
+      vb: '0 0 46 60',
+      d: '<path d="M19 5 L11 11 L7 26 L13 28 L13 53 L33 53 L33 28 L39 26 L35 11 L27 5 Z"/><path d="M19 5 L19 10 L27 10 L27 5"/><path d="M23 10 L23 32"/>'
+    },
+    // A-line skirt flaring to a wide hem
+    flare: {
+      vb: '0 0 46 60',
+      d: '<path d="M17 5 L14 15 L4 54 L42 54 L32 15 L29 5 L23 11 Z"/><path d="M17 5 L23 11 L29 5"/><path d="M11 33 L35 33"/>'
+    },
+    palazzo: {
+      vb: '0 0 46 60',
+      d: '<path d="M13 6 L33 6 L40 54 L26 54 L23 30 L20 54 L6 54 Z"/><path d="M13 13 L33 13"/>'
+    },
+    trouser: {
+      vb: '0 0 46 60',
+      d: '<path d="M12 6 L34 6 L36 54 L26 54 L23 26 L20 54 L10 54 Z"/><path d="M12 13 L34 13"/>'
+    },
+
+    // ── Straight Trousers: two-view technical flat ──────────────────────
+    // Front: buttoned waistband, fly, front pleats, slant pockets.
+    // Back:  shirred elastic waistband, centre-back seam.
+    // Replace by putting real artwork in IMAGES['bot-2'] above.
+    trouser2view: {
+      // 140-wide box: front centred on x=34, back on x=106, so the two views
+      // are clearly apart. (An earlier 124-wide box let the front's right hem
+      // and the back's left hem overlap, which read as one tangled drawing.)
+      vb: '0 0 140 124', wide: true,
+      d: `<g stroke-width="1.9">
+            <path d="M15 26 L13 46 L5 113 L31 113 L34 62 L37 113 L63 113 L55 46 L53 26 Z"/>
+            <path d="M15 17 H53 V26 H15 Z"/>
+            <path d="M87 27 L85 47 L77 113 L103 113 L106 63 L109 113 L135 113 L127 47 L125 27 Z"/>
+            <path d="M87 15 H125 V27 H87 Z"/>
+          </g>
+          <g stroke-width="1.1">
+            <path d="M37 26 L37 44 C37 49 35 51 33 51"/>
+            <circle cx="40" cy="21.5" r="2.1"/><path d="M42.5 21.5 H45.5"/>
+            <path d="M16 28 C18 34 20 38 23 41"/><path d="M52 28 C50 34 48 38 45 41"/>
+            <path d="M106 27 L106 63"/>
+          </g>
+          <g stroke-width=".75" opacity=".6">
+            <path d="M26 27 L24 59"/><path d="M43 27 L45 59"/>
+            <path d="M20 30 L17 52"/><path d="M48 30 L51 52"/>
+            <path d="M91 16 V26"/><path d="M95 16 V26"/><path d="M99 16 V26"/>
+            <path d="M103 16 V26"/><path d="M107 16 V26"/><path d="M111 16 V26"/>
+            <path d="M115 16 V26"/><path d="M119 16 V26"/><path d="M123 16 V26"/>
+            <path d="M92 28 L91 36"/><path d="M97 28 L96 37"/><path d="M102 28 L101.5 36"/>
+            <path d="M110 28 L110.5 36"/><path d="M115 28 L116 37"/><path d="M120 28 L121 36"/>
+          </g>`
+    }
   };
 
-  const picks = {};
-  let CHOICE = null;
+  const picks = {}; // id -> {label, cat, size, unsure, qty, m}  (stitched garments only)
+  let CHOICE = null;   // 'stitched' | 'material'
   const materialPanel = document.getElementById('materialpanel');
   const garmentWrap2 = document.getElementById('garmentwrap');
   const matlenInput = () => document.getElementById('matlen');
-  const errorMsg = document.getElementById('errorMsg');
-  const todo = document.getElementById('todo');
-  const todolist = document.getElementById('todolist');
 
   window.setChoice = function (mode, btn) {
     CHOICE = mode;
@@ -1113,6 +1478,7 @@
     if (mode === 'material') {
       materialPanel.style.display = 'block';
       garmentWrap2.style.display = 'none';
+      // clear any stitched picks
       for (const k in picks) delete picks[k];
       document.querySelectorAll('.garment[data-on="1"]').forEach(c => c.dataset.on = '0');
     } else {
@@ -1122,13 +1488,37 @@
     }
     check();
   };
-
   const labels = {};
   const cats = document.getElementById('cats');
   const summary = document.getElementById('summary');
   const sumrows = document.getElementById('sumrows');
   const submit = document.getElementById('submit');
 
+  const ITEMS = {};                       // id -> catalogue item, for the error fallback
+  CATALOGUE.forEach(g => g.items.forEach(i => ITEMS[i.id] = i));
+
+  function svgFor(g) {
+    const a = ART[g.art] || ART.dress;
+    return `<svg viewBox="${a.vb}"${a.wide ? ' class="wide"' : ''} fill="none" stroke="#3F3F45"
+              stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">${a.d}</svg>`;
+  }
+
+  // A real image in IMAGES wins; otherwise fall back to the built-in drawing.
+  function artFor(g) {
+    const src = (IMAGES[g.id] || '').trim();
+    if (!src) return svgFor(g);
+    return `<img src="${src}" alt="${g.label}" loading="lazy" onerror="imgFail(this)">`;
+  }
+
+  // If the image can't load — repo made private, file renamed, network blocked —
+  // quietly put the line drawing back rather than showing a broken-image icon.
+  window.imgFail = function (img) {
+    const fig = img.parentNode, card = fig.closest('.garment');
+    img.setAttribute('data-broken', '');
+    fig.insertAdjacentHTML('beforeend', svgFor(ITEMS[card.dataset.id]));
+  };
+
+  // render catalogue grouped by category
   cats.innerHTML = CATALOGUE.map(group => `
     <div class="catwrap">
       <p class="cathead">${group.cat}</p>
@@ -1139,10 +1529,8 @@
     return `
           <div class="garment" data-id="${g.id}" data-on="0" data-mode="stitched">
             <button class="gtop" type="button" onclick="toggleGarment('${g.id}')">
-              <figure><em>&check;</em>${g.img
-        ? `<img src="${g.img}" alt="${g.label}" loading="lazy" onerror="this.remove()">`
-        : `<svg viewBox="0 0 46 60" fill="none" stroke="#6B6B70" stroke-width="1.6">${SVG[g.art]}</svg>`}</figure>
-              <b>${g.label}</b><span>${group.cat.slice(0, -1)}</span>
+              <figure><em>&check;</em>${artFor(g)}</figure>
+              <b>${g.label}</b><span>${group.one}</span>
             </button>
             <div class="gbody">
               <p class="glab">How many</p>
@@ -1167,6 +1555,7 @@
                   </div>
                 </div>
               </div>
+
             </div>
           </div>`;
   }).join('')}
@@ -1189,6 +1578,7 @@
     check();
   };
 
+
   window.bump = function (id, delta) {
     const p = picks[id]; if (!p) return;
     p.qty = Math.min(MAXQ, Math.max(1, p.qty + delta));
@@ -1209,6 +1599,7 @@
     check();
   };
 
+
   window.toggleUnsure = function (id, btn) {
     const p = picks[id]; p.unsure = !p.unsure;
     btn.setAttribute('aria-pressed', p.unsure);
@@ -1225,12 +1616,7 @@
   const fname = document.getElementById('fname'), lname = document.getElementById('lname'),
     ecode = document.getElementById('ecode'), email = document.getElementById('email'),
     phone = document.getElementById('phone'), branch = document.getElementById('branch');
-  // listen on both input+change (autofill and <select> do not always fire 'input')
-  [fname, lname, ecode, email, phone, branch].forEach(e2 => {
-    e2.addEventListener('input', check);
-    e2.addEventListener('change', check);
-  });
-  document.getElementById('form').addEventListener('change', check);
+  [fname, lname, ecode, email, phone, branch].forEach(e2 => e2.addEventListener('input', check));
 
   function emailOk(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
   function complete1(p) { return (!!p.size || p.unsure); }
@@ -1242,180 +1628,203 @@
     return `<div class="line${total ? ' total' : ''}"><span class="k">${k}${isMat ? '<span class="tagm">MATERIAL</span>' : ''}</span><span class="v">${v}</span></div>`;
   }
 
-  /**
-   * Returns a list of everything still missing. Empty list = ready to send.
-   * The button is never disabled — we surface this list on click instead,
-   * so it is always obvious why the form will not go.
-   */
-  function missingItems() {
-    const miss = [];
-    if (!fname.value.trim()) miss.push('Enter your first name');
-    if (!lname.value.trim()) miss.push('Enter your last name');
-    if (!ecode.value.trim()) miss.push('Enter your employee code');
-    if (!emailOk(email.value.trim())) miss.push('Enter a valid email address');
-    if (phone.value.replace(/\D/g, '').length < 10) miss.push('Enter a 10-digit phone number');
-    if (!branch.value) miss.push('Select your branch');
-    if (!CHOICE) miss.push('Choose "Stitched uniforms" or "Material only"');
-
-    if (CHOICE === 'material') {
-      const v = parseFloat((matlenInput() && matlenInput().value) || '');
-      if (isNaN(v) || v <= 0) miss.push('Enter how many metres of material you need');
-    } else if (CHOICE === 'stitched') {
-      const ids = Object.keys(picks);
-      if (!ids.length) miss.push('Tap at least one garment to add it');
-      else {
-        const noSize = ids.filter(id => !complete1(picks[id]));
-        if (noSize.length) miss.push('Pick a size for: ' + noSize.map(id => labels[id]).join(', '));
-      }
-    }
-    return miss;
-  }
-
-  /** Keeps the live summary in sync. Does NOT touch the button. */
   function check() {
+    const who = fname.value.trim() && lname.value.trim() && ecode.value.trim()
+      && emailOk(email.value.trim()) && phone.value.trim().length >= 10 && branch.value;
+
+    let pathOk = false;
     if (CHOICE === 'material') {
       const v = parseFloat((matlenInput() && matlenInput().value) || '');
       const ok = !isNaN(v) && v > 0;
       summary.style.display = ok ? 'block' : 'none';
-      if (ok) sumrows.innerHTML = line('Material only', v + ' metres', true, false)
-        + line('For', 'full uniform, stitched elsewhere', false, false);
+      if (ok) sumrows.innerHTML = line('Material only', v + ' metres', true, false) + line('For', 'full uniform, stitched elsewhere', false, false);
+      pathOk = ok;
     } else if (CHOICE === 'stitched') {
       const ids = Object.keys(picks);
+      // NOTE: ids are strings, so they must be mapped back to the pick object
+      // before completeness is checked (previously complete1 received the id).
+      const allOk = ids.length > 0 && ids.every(id => complete1(picks[id]));
       if (ids.length) {
         summary.style.display = 'block';
         const total = ids.reduce((n, id) => n + picks[id].qty, 0);
         sumrows.innerHTML = ids.map(id => line(labels[id], describe(picks[id]), false, false)).join('')
           + line('Total items', total, false, true);
       } else summary.style.display = 'none';
+      pathOk = allOk;
     } else {
       summary.style.display = 'none';
     }
-
-    // once the user has seen the checklist, keep it updated as they fix things
-    if (todo.classList.contains('show')) renderTodo(missingItems());
+    submit.disabled = !(who && CHOICE && pathOk);
   }
 
-  function renderTodo(miss) {
-    if (!miss.length) { todo.classList.remove('show'); return; }
-    todolist.innerHTML = miss.map(m => `<li>${m}</li>`).join('');
-    todo.classList.add('show');
+  // ── Sending to Google Sheets ────────────────────────────────────────────
+  const senderr = document.getElementById('senderr');
+  const senderrmsg = document.getElementById('senderrmsg');
+  let SENDING = false;
+
+  // "Branch Name - City" → city is the part after the LAST " - ", so branch
+  // names that themselves contain a hyphen still split correctly.
+  function splitBranch(v) {
+    const i = v.lastIndexOf(' - ');
+    return i === -1 ? { branch: v, city: '' }
+      : { branch: v.slice(0, i).trim(), city: v.slice(i + 3).trim() };
   }
 
-  function showError(msg) {
-    errorMsg.textContent = msg;
-    errorMsg.classList.add('show');
-    setTimeout(() => errorMsg.classList.remove('show'), 5000);
+  function newId() {
+    return 'U' + Date.now().toString(36).toUpperCase()
+      + Math.random().toString(36).slice(2, 6).toUpperCase();
   }
 
-  function getCityFromBranch(branch) {
-    const mapping = {
-      'Bandra West — Mumbai': 'Mumbai',
-      'Andheri Lokhandwala — Mumbai': 'Mumbai',
-      'Powai — Mumbai': 'Mumbai',
-      'Koregaon Park — Pune': 'Pune',
-      'Indiranagar — Bengaluru': 'Bengaluru'
-    };
-    return mapping[branch] || 'N/A';
-  }
+  // ⚠ These field names are read directly by Code.gs (buildRows_). Renaming
+  //   any of them here without changing the script means rows stop being
+  //   written. In particular orderType must stay lowercase 'material' or
+  //   'stitched' — those exact strings are compared in the script.
+  function buildPayload() {
+    const now = new Date();
+    const b = splitBranch(branch.value);
 
-  submit.addEventListener('click', async () => {
-    // validate on click and show exactly what is missing
-    const miss = missingItems();
-    if (miss.length) {
-      renderTodo(miss);
-      todo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    todo.classList.remove('show');
-
-    submit.classList.add('loading');
-    submit.disabled = true;
-    submit.textContent = 'Sending...';
-    errorMsg.classList.remove('show');
-
-    try {
-      // Prepare data object
-      const payload = {
-        firstName: fname.value.trim(),
-        lastName: lname.value.trim(),
-        employeeCode: ecode.value.trim(),
-        email: email.value.trim(),
-        phone: phone.value.trim(),
-        branch: branch.value,
-        city: getCityFromBranch(branch.value),
-        orderType: CHOICE,
-        notes: document.getElementById('notes').value.trim()
+    // one entry per garment; the script writes one sheet row from each
+    const garments = Object.keys(picks).map(id => {
+      const p = picks[id];
+      return {
+        id: id,
+        label: p.label,
+        category: p.cat,
+        size: p.size || '',
+        qty: p.qty,
+        unsure: !!p.unsure
       };
+    });
 
-      if (CHOICE === 'material') {
-        payload.materialLength = parseFloat(matlenInput().value);
-      } else if (CHOICE === 'stitched') {
-        payload.garments = Object.keys(picks).map(id => ({
-          id: id,
-          label: labels[id],
-          size: picks[id].size,
-          qty: picks[id].qty,
-          unsure: picks[id].unsure,
-          measurements: picks[id].m
-        }));
-      }
+    return {
+      clientRef: newId(),                 // fallback only; the sheet issues S0001…
+      submittedAtLocal: now.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      firstName: fname.value.trim(),
+      lastName: lname.value.trim(),
+      fullName: (fname.value.trim() + ' ' + lname.value.trim()).trim(),
+      employeeCode: ecode.value.trim(),
+      email: email.value.trim(),
+      phone: phone.value.trim(),
+      branch: b.branch,                   // "Aundh Pushpak Park"
+      city: b.city,                       // "Pune"
+      branchFull: branch.value,           // kept for reference; script ignores it
+      orderType: CHOICE === 'material' ? 'material' : 'stitched',
+      materialLength: CHOICE === 'material' ? (parseFloat(matlenInput().value) || 0) : '',
+      garments: CHOICE === 'material' ? [] : garments,
+      totalItems: CHOICE === 'material' ? '' : garments.reduce((n, g) => n + (g.qty || 0), 0),
+      // The notes field was removed from the form; the Notes column stays in
+      // the sheet, so send an empty string rather than dropping the key.
+      notes: ''
+    };
+  }
 
-      console.log('Submitting payload:', payload);
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-      if (APPS_SCRIPT_URL.indexOf('/a/macros/') !== -1) {
-        console.warn('Your Apps Script URL is domain-restricted (/a/macros/). Redeploy with "Who has access: Anyone" or submissions will be silently dropped.');
-      }
-
-      // text/plain avoids a CORS preflight, which Apps Script cannot answer.
-      // no-cors means we get an opaque response back — we cannot read it, so we
-      // treat a resolved fetch as success.
-      await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-
-      showSuccessScreen(payload);
-
-    } catch (err) {
-      console.error('Submit failed:', err);
-      showError('Could not send: ' + err.message + '. Please check your connection and try again.');
-      submit.classList.remove('loading');
-      submit.disabled = false;
-      submit.textContent = 'Send my sizes';
+  // Content-Type is text/plain on purpose. A JSON content type makes this a
+  // "preflighted" cross-origin request, and Apps Script does not answer the
+  // OPTIONS preflight — the POST would be blocked before it is ever sent.
+  // text/plain keeps it a simple request; Code.gs JSON.parses the raw body.
+  async function postOnce(payload) {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      redirect: 'follow'
+    });
+    if (!res.ok) throw new Error('The server answered ' + res.status + '.');
+    const text = (await res.text()).trim();
+    // Apps Script returns our JSON on success. A login page means the
+    // deployment is not set to "Anyone".
+    if (/^\s*</.test(text)) {
+      throw new Error('Google returned a sign-in page instead of saving. '
+        + 'Set the deployment\'s "Who has access" to Anyone, then re-deploy.');
     }
-  });
+    let out; try { out = JSON.parse(text); } catch (e) { return { raw: text }; }
+    // Code.gs answers {status:'success', submissionId} or {status:'error', message}
+    if (out && out.status === 'error') {
+      throw new Error(out.message || 'The script reported an error.');
+    }
+    return out || {};
+  }
 
-  function showSuccessScreen(payload) {
+  // Salon wi-fi drops out; two quiet retries save a lost submission.
+  async function postWithRetry(payload, tries = 3) {
+    let last;
+    for (let i = 0; i < tries; i++) {
+      try { return await postOnce(payload); }
+      catch (e) { last = e; if (i < tries - 1) await sleep(900 * Math.pow(2, i)); }
+    }
+    throw last;
+  }
+
+  // `res` is the Apps Script reply; prefer its S0001-style id so the reference
+  // the employee sees is the one actually written in the sheet.
+  function renderReceipt(payload, res) {
+    const ref = (res && res.submissionId) || payload.clientRef;
     document.getElementById('recwho').innerHTML = [
-      line('Name', payload.firstName + ' ' + payload.lastName),
+      line('Reference', ref),
+      line('Name', payload.fullName),
       line('Employee code', payload.employeeCode),
-      line('Branch', payload.branch),
+      line('Branch', payload.branchFull),
       line('Email', payload.email),
       line('Phone', payload.phone),
       line('Order type', payload.orderType === 'material' ? 'Material only' : 'Stitched uniforms'),
-      line('Recorded', new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }))
+      line('Recorded', payload.submittedAtLocal)
     ].join('');
-
-    if (payload.orderType === 'material') {
+    if (CHOICE === 'material') {
       document.querySelector('#done .sect').textContent = 'Material';
       document.getElementById('recgarments').innerHTML =
         line('Total length', payload.materialLength + ' metres', true, false)
         + line('Purpose', 'Full uniform, stitched elsewhere', false, false);
     } else {
-      const total = payload.garments.reduce((n, g) => n + g.qty, 0);
       document.getElementById('recgarments').innerHTML =
-        payload.garments.map(g => line(labels[g.id], describe(g), false, false)).join('')
-        + line('Total', total, false, true);
+        payload.garments.map(g => line(
+          g.label,
+          (g.unsure ? 'Custom' : g.size) + (g.qty > 1 ? ' × ' + g.qty : '')
+        )).join('')
+        + line('Total', payload.totalItems, false, true);
     }
-
-    document.getElementById('form').style.display = 'none';
-    document.querySelector('header').style.display = 'none';
-    document.getElementById('done').style.display = 'block';
-    window.scrollTo(0, 0);
   }
 
-  check(); // run once on load so the button state is correct from the start
+  function showError(msg, detail) {
+    senderrmsg.innerHTML = msg + (detail ? '<br><code>' + detail + '</code>' : '');
+    senderr.style.display = 'block';
+    senderr.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  submit.addEventListener('click', async () => {
+    if (SENDING) return;                       // guard against a double tap
+    senderr.style.display = 'none';
+
+    if (!APPS_SCRIPT_URL) {
+      showError('This form has no Apps Script URL yet, so nothing can be saved. '
+        + 'Paste the Web app URL into APPS_SCRIPT_URL at the top of the file.');
+      return;
+    }
+
+    SENDING = true;
+    submit.disabled = true;
+    submit.setAttribute('data-sending', '');
+    submit.textContent = 'Please wait\u2026';
+
+    const payload = buildPayload();
+    try {
+      const res = await postWithRetry(payload);
+      renderReceipt(payload, res);
+      document.getElementById('form').style.display = 'none';
+      document.querySelector('header').style.display = 'none';
+      document.getElementById('done').style.display = 'block';
+      window.scrollTo(0, 0);
+    } catch (e) {
+      // Never show the success screen on a failure — staff would walk away
+      // believing their sizes were recorded when nothing was saved.
+      showError('Your sizes were not saved. Check the internet connection and '
+        + 'tap Try again. If it keeps failing, tell the uniform team.', String(e.message || e));
+      submit.textContent = 'Try again';
+      submit.disabled = false;
+    } finally {
+      SENDING = false;
+      submit.removeAttribute('data-sending');
+    }
+  });
 </script>
