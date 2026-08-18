@@ -129,6 +129,17 @@
     line-height: 1.5
   }
 
+  .mandatory {
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(230, 0, 61, .16);
+    border-left: 3px solid var(--red);
+    border-radius: 0 7px 7px 0;
+    padding: 9px 12px
+  }
+
   .pending {
     margin-top: 14px;
     font-size: 10.5px;
@@ -994,6 +1005,7 @@
       <h1>Your uniform sizes</h1>
       <p>Choose stitched uniforms or material only, then tell us the details. About two minutes.</p>
     </div>
+    <p class="mandatory">All fields are mandatory.</p>
     <p class="pending">Uniform sizing programme &middot; please complete once</p>
   </header>
 
@@ -1023,137 +1035,15 @@
         <h2>Where you work</h2>
       </div>
       <div class="field">
+        <label for="city">City</label>
+        <select id="city">
+          <option value="">Select your city</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="branch">Branch</label>
-        <select id="branch">
-          <option value="">Select your branch</option>
-          <optgroup label="Ahmedabad">
-            <option value="University Area - Ahmedabad">University Area - Ahmedabad</option>
-            <option value="Prahlad Nagar - Ahmedabad">Prahlad Nagar - Ahmedabad</option>
-            <option value="Shymal Circle - Ahmedabad">Shymal Circle - Ahmedabad</option>
-            <option value="Hebatpur - Ahmedabad">Hebatpur - Ahmedabad</option>
-            <option value="Maninagar - Ahmedabad">Maninagar - Ahmedabad</option>
-            <option value="Nikol - Ahmedabad">Nikol - Ahmedabad</option>
-            <option value="Satellite - Ahmedabad">Satellite - Ahmedabad</option>
-            <option value="Science City - Ahmedabad">Science City - Ahmedabad</option>
-            <option value="Shahibaug - Ahmedabad">Shahibaug - Ahmedabad</option>
-            <option value="Sindhu Bhavan - Ahmedabad">Sindhu Bhavan - Ahmedabad</option>
-            <option value="Solitaire - Ahmedabad">Solitaire - Ahmedabad</option>
-            <option value="South Bopal - Ahmedabad">South Bopal - Ahmedabad</option>
-          </optgroup>
-          <optgroup label="Bengaluru">
-            <option value="AECS Layout - Bengaluru">AECS Layout - Bengaluru</option>
-            <option value="Bannerghatta Road - Bengaluru">Bannerghatta Road - Bengaluru</option>
-            <option value="Bellandur - Bengaluru">Bellandur - Bengaluru</option>
-            <option value="JP Nagar 7th Phase - Bengaluru">JP Nagar 7th Phase - Bengaluru</option>
-            <option value="Jayanagar Ashoka Pillar - Bengaluru">Jayanagar Ashoka Pillar - Bengaluru</option>
-            <option value="JP Nagar 5th Phase - Bengaluru">JP Nagar 5th Phase - Bengaluru</option>
-            <option value="RMZ Ecoworld - Bengaluru">RMZ Ecoworld - Bengaluru</option>
-            <option value="Haralur Main Road - Bengaluru">Haralur Main Road - Bengaluru</option>
-            <option value="HSR Layout - Bengaluru">HSR Layout - Bengaluru</option>
-            <option value="Indira Nagar - Bengaluru">Indira Nagar - Bengaluru</option>
-            <option value="K R Puram - Bengaluru">K R Puram - Bengaluru</option>
-            <option value="Kammanahalli - Bengaluru">Kammanahalli - Bengaluru</option>
-            <option value="Koramangala 4th Block - Bengaluru">Koramangala 4th Block - Bengaluru</option>
-            <option value="Koramangala 8th Block - Bengaluru">Koramangala 8th Block - Bengaluru</option>
-            <option value="R T Nagar - Bengaluru">R T Nagar - Bengaluru</option>
-            <option value="Sadashiv Nagar - Bengaluru">Sadashiv Nagar - Bengaluru</option>
-          </optgroup>
-          <optgroup label="Gandhinagar">
-            <option value="Gandhinagar Sargasan - Gandhinagar">Gandhinagar Sargasan - Gandhinagar</option>
-          </optgroup>
-          <optgroup label="Indore">
-            <option value="Indore Phoenix Citadel - Indore">Indore Phoenix Citadel - Indore</option>
-          </optgroup>
-          <optgroup label="Mumbai">
-            <option value="Airoli - Mumbai">Airoli - Mumbai</option>
-            <option value="Andheri (E) Marol Blue Fortuna - Mumbai">Andheri (E) Marol Blue Fortuna - Mumbai</option>
-            <option value="Andheri (E) Tandon Mall - Mumbai">Andheri (E) Tandon Mall - Mumbai</option>
-            <option value="Andheri (W) Four Bunglows - Mumbai">Andheri (W) Four Bunglows - Mumbai</option>
-            <option value="Andheri (W) Lokhandwala Link Palace - Mumbai">Andheri (W) Lokhandwala Link Palace - Mumbai
-            </option>
-            <option value="Andheri (W) Lokhandwala Silver Spring - Mumbai">Andheri (W) Lokhandwala Silver Spring -
-              Mumbai</option>
-            <option value="ANdheri (W) Veera Desai Road - Mumbai">ANdheri (W) Veera Desai Road - Mumbai</option>
-            <option value="Bandra (W) Hill Road - Mumbai">Bandra (W) Hill Road - Mumbai</option>
-            <option value="Bandra (W) Linking Road - Mumbai">Bandra (W) Linking Road - Mumbai</option>
-            <option value="Borivali (W) Factory Lane - Mumbai">Borivali (W) Factory Lane - Mumbai</option>
-            <option value="Borivali (W) Satra Park - Mumbai">Borivali (W) Satra Park - Mumbai</option>
-            <option value="CBD Belapur - Mumbai">CBD Belapur - Mumbai</option>
-            <option value="Chandivali Lake Homes - Mumbai">Chandivali Lake Homes - Mumbai</option>
-            <option value="Chembur (E) Ambedkar Garden - Mumbai">Chembur (E) Ambedkar Garden - Mumbai</option>
-            <option value="Dombivali (E) Xperia Mall - Mumbai">Dombivali (E) Xperia Mall - Mumbai</option>
-            <option value="Ghatkopar (E) Vikrant Circle - Mumbai">Ghatkopar (E) Vikrant Circle - Mumbai</option>
-            <option value="Goregaon (W) Kumud Nagar - Mumbai">Goregaon (W) Kumud Nagar - Mumbai</option>
-            <option value="Goregaon (W) Rustomjee Ozone - Mumbai">Goregaon (W) Rustomjee Ozone - Mumbai</option>
-            <option value="JVLR - Mumbai">JVLR - Mumbai</option>
-            <option value="Kalwa - Mumbai">Kalwa - Mumbai</option>
-            <option value="Kalyan Khadakpada Godrej Hills - Mumbai">Kalyan Khadakpada Godrej Hills - Mumbai</option>
-            <option value="Kandivali (E) Dattani Park - Mumbai">Kandivali (E) Dattani Park - Mumbai</option>
-            <option value="Kandivali (E) Thakur Village - Mumbai">Kandivali (E) Thakur Village - Mumbai</option>
-            <option value="Kandivali (W) S V Road - Mumbai">Kandivali (W) S V Road - Mumbai</option>
-            <option value="Kemps Corner - Mumbai">Kemps Corner - Mumbai</option>
-            <option value="Kharghar Patel Heritage - Mumbai">Kharghar Patel Heritage - Mumbai</option>
-            <option value="Kharghar Sec 34 A - Mumbai">Kharghar Sec 34 A - Mumbai</option>
-            <option value="Khoparkhairane Sec 14 - Mumbai">Khoparkhairane Sec 14 - Mumbai</option>
-            <option value="Kurla (W) Phoenix Mall - Mumbai">Kurla (W) Phoenix Mall - Mumbai</option>
-            <option value="Lamington Road - Mumbai">Lamington Road - Mumbai</option>
-            <option value="Lower Parel Phoenix Palladium - Mumbai">Lower Parel Phoenix Palladium - Mumbai</option>
-            <option value="Malad (W) Infiniti Mall - Mumbai">Malad (W) Infiniti Mall - Mumbai</option>
-            <option value="Malad (W) Inorbit Mall - Mumbai">Malad (W) Inorbit Mall - Mumbai</option>
-            <option value="Matunga Circle - Mumbai">Matunga Circle - Mumbai</option>
-            <option value="Matunga Tulsi Pipe Road - Mumbai">Matunga Tulsi Pipe Road - Mumbai</option>
-            <option value="Mira Road (E) Brahmadev Regency - Mumbai">Mira Road (E) Brahmadev Regency - Mumbai</option>
-            <option value="Mira Road Delta Garden - Mumbai">Mira Road Delta Garden - Mumbai</option>
-            <option value="Mulund (W) LBS Marg - Mumbai">Mulund (W) LBS Marg - Mumbai</option>
-            <option value="Mulund (W) Runwal Greens - Mumbai">Mulund (W) Runwal Greens - Mumbai</option>
-            <option value="Sanpada - Mumbai">Sanpada - Mumbai</option>
-            <option value="Parel Ashok Towers - Mumbai">Parel Ashok Towers - Mumbai</option>
-            <option value="Powai - Mumbai">Powai - Mumbai</option>
-            <option value="Prabhadevi - Mumbai">Prabhadevi - Mumbai</option>
-            <option value="Santacruz (W) Off S V Road - Mumbai">Santacruz (W) Off S V Road - Mumbai</option>
-            <option value="Seawoods - Mumbai">Seawoods - Mumbai</option>
-            <option value="Sion Circle - Mumbai">Sion Circle - Mumbai</option>
-            <option value="Tardeo - Mumbai">Tardeo - Mumbai</option>
-            <option value="Thane (W) Hiranandani Estate - Mumbai">Thane (W) Hiranandani Estate - Mumbai</option>
-            <option value="Thane (W) Hiranandani Meadows - Mumbai">Thane (W) Hiranandani Meadows - Mumbai</option>
-            <option value="Thane (W) Panch Pakhdi - Mumbai">Thane (W) Panch Pakhdi - Mumbai</option>
-            <option value="Thane (W) Viviana Mall - Mumbai">Thane (W) Viviana Mall - Mumbai</option>
-            <option value="Tilak Nagar - Mumbai">Tilak Nagar - Mumbai</option>
-            <option value="Vashi Sector 17 - Mumbai">Vashi Sector 17 - Mumbai</option>
-            <option value="Vikhroli (E) - Mumbai">Vikhroli (E) - Mumbai</option>
-            <option value="Vile Parle (W) S V Road - Mumbai">Vile Parle (W) S V Road - Mumbai</option>
-            <option value="Virar (W) Global City - Mumbai">Virar (W) Global City - Mumbai</option>
-          </optgroup>
-          <optgroup label="Pimpri-Chinchwad">
-            <option value="Wakad - Pimpri-Chinchwad">Wakad - Pimpri-Chinchwad</option>
-          </optgroup>
-          <optgroup label="Pune">
-            <option value="Aundh Pushpak Park - Pune">Aundh Pushpak Park - Pune</option>
-            <option value="Kharadi - Pune">Kharadi - Pune</option>
-            <option value="Koregaon Park - Pune">Koregaon Park - Pune</option>
-            <option value="Mukund Nagar - Pune">Mukund Nagar - Pune</option>
-            <option value="NIBM Tribeca Highstreet - Pune">NIBM Tribeca Highstreet - Pune</option>
-            <option value="Pimple Saudagar - Pune">Pimple Saudagar - Pune</option>
-            <option value="Viman Nagar Phoenix Mall - Pune">Viman Nagar Phoenix Mall - Pune</option>
-            <option value="Wanowrie - Pune">Wanowrie - Pune</option>
-          </optgroup>
-          <optgroup label="Surat">
-            <option value="Canal Road Vesu - Surat">Canal Road Vesu - Surat</option>
-            <option value="Lal Bungalow - Surat">Lal Bungalow - Surat</option>
-            <option value="Mota Varacha - Surat">Mota Varacha - Surat</option>
-            <option value="Wood Square - Surat">Wood Square - Surat</option>
-          </optgroup>
-          <optgroup label="Thane">
-            <option value="Thane (W) Lodha Amara - Mumbai">Thane (W) Lodha Amara - Mumbai</option>
-          </optgroup>
-          <optgroup label="Vadodara">
-            <option value="Alkapuri - Vadodara">Alkapuri - Vadodara</option>
-            <option value="Bhayli - Vadodara">Bhayli - Vadodara</option>
-            <option value="Gotri - Vadodara">Gotri - Vadodara</option>
-            <option value="Inorbit Mall - Vadodara">Inorbit Mall - Vadodara</option>
-            <option value="Manjalpur Eva Mall - Vadodara">Manjalpur Eva Mall - Vadodara</option>
-            <option value="OP Road - Vadodara">OP Road - Vadodara</option>
-          </optgroup>
+        <select id="branch" disabled>
+          <option value="">Select your city first</option>
         </select>
       </div>
     </section>
@@ -1465,6 +1355,120 @@
     }
   };
 
+  // ── Branches ────────────────────────────────────────────────────────────
+  // "Branch Name - City". The city is taken from the text after the LAST
+  // " - ", so a branch name containing a hyphen still splits correctly.
+  // The picked value keeps this full string, which is what the payload and
+  // the sheet's Branch / City columns are derived from.
+  const BRANCHES = [
+    'University Area - Ahmedabad',
+    'Prahlad Nagar - Ahmedabad',
+    'Shymal Circle - Ahmedabad',
+    'Hebatpur - Ahmedabad',
+    'Maninagar - Ahmedabad',
+    'Nikol - Ahmedabad',
+    'Satellite - Ahmedabad',
+    'Science City - Ahmedabad',
+    'Shahibaug - Ahmedabad',
+    'Sindhu Bhavan - Ahmedabad',
+    'Solitaire - Ahmedabad',
+    'South Bopal - Ahmedabad',
+    'AECS Layout - Bengaluru',
+    'Bannerghatta Road - Bengaluru',
+    'Bellandur - Bengaluru',
+    'JP Nagar 7th Phase - Bengaluru',
+    'Jayanagar Ashoka Pillar - Bengaluru',
+    'JP Nagar 5th Phase - Bengaluru',
+    'RMZ Ecoworld - Bengaluru',
+    'Haralur Main Road - Bengaluru',
+    'HSR Layout - Bengaluru',
+    'Indira Nagar - Bengaluru',
+    'K R Puram - Bengaluru',
+    'Kammanahalli - Bengaluru',
+    'Koramangala 4th Block - Bengaluru',
+    'Koramangala 8th Block - Bengaluru',
+    'R T Nagar - Bengaluru',
+    'Sadashiv Nagar - Bengaluru',
+    'Gandhinagar Sargasan - Gandhinagar',
+    'Indore Phoenix Citadel - Indore',
+    'Airoli - Mumbai',
+    'Andheri (E) Marol Blue Fortuna - Mumbai',
+    'Andheri (E) Tandon Mall - Mumbai',
+    'Andheri (W) Four Bunglows - Mumbai',
+    'Andheri (W) Lokhandwala Link Palace - Mumbai',
+    'Andheri (W) Lokhandwala Silver Spring - Mumbai',
+    'ANdheri (W) Veera Desai Road - Mumbai',
+    'Bandra (W) Hill Road - Mumbai',
+    'Bandra (W) Linking Road - Mumbai',
+    'Borivali (W) Factory Lane - Mumbai',
+    'Borivali (W) Satra Park - Mumbai',
+    'CBD Belapur - Mumbai',
+    'Chandivali Lake Homes - Mumbai',
+    'Chembur (E) Ambedkar Garden - Mumbai',
+    'Dombivali (E) Xperia Mall - Mumbai',
+    'Ghatkopar (E) Vikrant Circle - Mumbai',
+    'Goregaon (W) Kumud Nagar - Mumbai',
+    'Goregaon (W) Rustomjee Ozone - Mumbai',
+    'JVLR - Mumbai',
+    'Kalwa - Mumbai',
+    'Kalyan Khadakpada Godrej Hills - Mumbai',
+    'Kandivali (E) Dattani Park - Mumbai',
+    'Kandivali (E) Thakur Village - Mumbai',
+    'Kandivali (W) S V Road - Mumbai',
+    'Kemps Corner - Mumbai',
+    'Kharghar Patel Heritage - Mumbai',
+    'Kharghar Sec 34 A - Mumbai',
+    'Khoparkhairane Sec 14 - Mumbai',
+    'Kurla (W) Phoenix Mall - Mumbai',
+    'Lamington Road - Mumbai',
+    'Lower Parel Phoenix Palladium - Mumbai',
+    'Malad (W) Infiniti Mall - Mumbai',
+    'Malad (W) Inorbit Mall - Mumbai',
+    'Matunga Circle - Mumbai',
+    'Matunga Tulsi Pipe Road - Mumbai',
+    'Mira Road (E) Brahmadev Regency - Mumbai',
+    'Mira Road Delta Garden - Mumbai',
+    'Mulund (W) LBS Marg - Mumbai',
+    'Mulund (W) Runwal Greens - Mumbai',
+    'Sanpada - Mumbai',
+    'Parel Ashok Towers - Mumbai',
+    'Powai - Mumbai',
+    'Prabhadevi - Mumbai',
+    'Santacruz (W) Off S V Road - Mumbai',
+    'Seawoods - Mumbai',
+    'Sion Circle - Mumbai',
+    'Tardeo - Mumbai',
+    'Thane (W) Hiranandani Estate - Mumbai',
+    'Thane (W) Hiranandani Meadows - Mumbai',
+    'Thane (W) Panch Pakhdi - Mumbai',
+    'Thane (W) Viviana Mall - Mumbai',
+    'Tilak Nagar - Mumbai',
+    'Vashi Sector 17 - Mumbai',
+    'Vikhroli (E) - Mumbai',
+    'Vile Parle (W) S V Road - Mumbai',
+    'Virar (W) Global City - Mumbai',
+    'Wakad - Pimpri-Chinchwad',
+    'Aundh Pushpak Park - Pune',
+    'Kharadi - Pune',
+    'Koregaon Park - Pune',
+    'Mukund Nagar - Pune',
+    'NIBM Tribeca Highstreet - Pune',
+    'Pimple Saudagar - Pune',
+    'Viman Nagar Phoenix Mall - Pune',
+    'Wanowrie - Pune',
+    'Canal Road Vesu - Surat',
+    'Lal Bungalow - Surat',
+    'Mota Varacha - Surat',
+    'Wood Square - Surat',
+    'Thane (W) Lodha Amara - Mumbai',
+    'Alkapuri - Vadodara',
+    'Bhayli - Vadodara',
+    'Gotri - Vadodara',
+    'Inorbit Mall - Vadodara',
+    'Manjalpur Eva Mall - Vadodara',
+    'OP Road - Vadodara'
+  ];
+
   const picks = {}; // id -> {label, cat, size, unsure, qty, m}  (stitched garments only)
   let CHOICE = null;   // 'stitched' | 'material'
   const materialPanel = document.getElementById('materialpanel');
@@ -1615,8 +1619,51 @@
 
   const fname = document.getElementById('fname'), lname = document.getElementById('lname'),
     ecode = document.getElementById('ecode'), email = document.getElementById('email'),
-    phone = document.getElementById('phone'), branch = document.getElementById('branch');
+    phone = document.getElementById('phone'), branch = document.getElementById('branch'),
+    city = document.getElementById('city');
   [fname, lname, ecode, email, phone, branch].forEach(e2 => e2.addEventListener('input', check));
+
+  // ── City → Branch filter ────────────────────────────────────────────────
+  // 106 branches in one list is unusable on a phone. Picking a city narrows
+  // the branch list to that city only; until then the branch select stays
+  // disabled so it cannot be answered out of order.
+  const cityOf = v => { const i = v.lastIndexOf(' - '); return i < 0 ? '' : v.slice(i + 3).trim(); };
+
+  const CITIES = BRANCHES.reduce((acc, b) => {
+    const c = cityOf(b);
+    if (acc.indexOf(c) === -1) acc.push(c);
+    return acc;
+  }, []).sort((a, b) => a.localeCompare(b));
+
+  city.innerHTML = '<option value="">Select your city</option>'
+    + CITIES.map(c => {
+      const n = BRANCHES.filter(b => cityOf(b) === c).length;
+      return `<option value="${c}">${c} (${n})</option>`;
+    }).join('');
+
+  function fillBranches() {
+    const c = city.value;
+    if (!c) {
+      branch.innerHTML = '<option value="">Select your city first</option>';
+      branch.disabled = true;
+      return;
+    }
+    const list = BRANCHES.filter(b => cityOf(b) === c)
+      .sort((a, b) => a.localeCompare(b));
+    branch.innerHTML = '<option value="">Select your branch</option>'
+      + list.map(b => `<option value="${b}">${b}</option>`).join('');
+    branch.disabled = false;
+  }
+
+  city.addEventListener('change', () => {
+    // changing city invalidates any branch already chosen, so clear it and
+    // re-run validation rather than leaving a stale branch selected
+    fillBranches();
+    branch.value = '';
+    check();
+  });
+
+  fillBranches();
 
   function emailOk(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
   function complete1(p) { return (!!p.size || p.unsure); }
