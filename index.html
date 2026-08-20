@@ -283,6 +283,84 @@
   /* men's + both hidden, kept in DOM */
 
   /* category grouping */
+  /* running allowance for the 3-set cap */
+  .allow {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 12px 14px;
+    margin-bottom: 16px
+  }
+
+  .allow .used {
+    font-family: Poppins, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink)
+  }
+
+  .allow .rule {
+    display: block;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 5px;
+    line-height: 1.5
+  }
+
+  /* complete, not blocked — green reads as "that's your full entitlement"
+     rather than as an error */
+  .allow[data-full] {
+    border-color: var(--ok);
+    background: #F1F8F4
+  }
+
+  .allow[data-full] .used {
+    color: var(--ok)
+  }
+
+  .allow .tick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--ok);
+    color: #fff;
+    font-size: 11px;
+    margin-right: 7px;
+    vertical-align: -3px
+  }
+
+  .allow[data-flash] {
+    animation: nudge .45s ease
+  }
+
+  @keyframes nudge {
+
+    0%,
+    100% {
+      transform: translateX(0)
+    }
+
+    25% {
+      transform: translateX(-4px)
+    }
+
+    75% {
+      transform: translateX(4px)
+    }
+  }
+
+  /* a garment whose category has no room left */
+  .garment[data-blocked="1"] {
+    opacity: .4
+  }
+
+  .garment[data-blocked="1"] .gtop {
+    cursor: not-allowed
+  }
+
   .catwrap {
     margin-bottom: 22px
   }
@@ -1090,7 +1168,11 @@
       <div class="steplab"><span class="num">4</span>
         <h2>Your garments</h2>
       </div>
-      <p class="note">Tap a garment to add it, then pick a size. Add as many as you need.</p>
+      <p class="note">Tap a garment to add it, then pick a size.</p>
+      <div class="allow" id="allow">
+        <span class="used" id="allowused">0 of 3 sets used</span>
+        <span class="rule">One set is a top with a bottom, or a dress.</span>
+      </div>
       <div id="cats"></div>
 
       <div class="chart">
@@ -1275,17 +1357,17 @@
       ]
     },
     {
+      cat: 'Trousers', one: 'Trouser', sub: 'Choose the designs you need', items: [
+        { id: 'bot-1', label: 'Palazzo Pants', art: 'palazzo' },
+        { id: 'bot-2', label: 'Straight Trousers', art: 'trouser2view' },
+        { id: 'bot-3', label: 'A line skirt', art: 'skirt' }
+      ]
+    },
+    {
       cat: 'Dresses', one: 'Dress', sub: 'Choose the designs you need', items: [
         { id: 'drs-1', label: 'Belt Tie Dress', art: 'dress' },
         { id: 'drs-2', label: 'Mandarin Collar Dress', art: 'mandarin' },
         { id: 'drs-3', label: 'Flare Dress', art: 'flare' }
-      ]
-    },
-    {
-      cat: 'Trousers', one: 'Trouser', sub: 'Choose the designs you need', items: [
-        { id: 'bot-1', label: 'Palazzo Pants', art: 'palazzo' },
-        { id: 'bot-2', label: 'Straight Trousers', art: 'trouser2view' },
-        { id: 'bot-3', label: 'A line skirt', art: 'trouser3view' }
       ]
     }
   ];
@@ -1295,6 +1377,17 @@
   // spelling. The chart lists XXS and 2XL, so those are offered too.
   const SIZES = ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL'];
   const MAXQ = 6;
+
+  // ── Set allowance ───────────────────────────────────────────────────────
+  // An employee gets MAXSETS sets. A set is a top worn with a bottom, or a
+  // dress. Tops and bottoms pair off, so what counts is whichever of the two
+  // is larger, plus the dresses:
+  //
+  //     max(tops, bottoms) + dresses <= MAXSETS
+  //
+  // 3 tops and 3 bottoms is 3 sets, not 6. A garment with no partner still
+  // takes a set of its own, which is why 3 tops + 1 dress is 4 and refused.
+  const MAXSETS = 3;
 
   // Built-in line drawings, used whenever IMAGES has no entry for a garment.
   // `vb` is the viewBox; `wide` marks two-view flats that need a bigger box.
@@ -1324,6 +1417,12 @@
     flare: {
       vb: '0 0 46 60',
       d: '<path d="M17 5 L14 15 L4 54 L42 54 L32 15 L29 5 L23 11 Z"/><path d="M17 5 L23 11 L29 5"/><path d="M11 33 L35 33"/>'
+    },
+    // A-line skirt: waistband, flaring to a wide hem. Without this, art
+    // 'trouser3view' fell through to ART.dress and a skirt drew as a dress.
+    skirt: {
+      vb: '0 0 46 60',
+      d: '<path d="M14 8 H32 V15 H14 Z"/><path d="M14 15 L5 52 L41 52 L32 15"/><path d="M23 16 L23 50"/>'
     },
     palazzo: {
       vb: '0 0 46 60',
@@ -1497,6 +1596,7 @@
       // clear any stitched picks
       for (const k in picks) delete picks[k];
       document.querySelectorAll('.garment[data-on="1"]').forEach(c => c.dataset.on = '0');
+      refreshLimits();
     } else {
       materialPanel.style.display = 'none';
       garmentWrap2.style.display = 'block';
@@ -1511,7 +1611,8 @@
   const submit = document.getElementById('submit');
 
   const ITEMS = {};                       // id -> catalogue item, for the error fallback
-  CATALOGUE.forEach(g => g.items.forEach(i => ITEMS[i.id] = i));
+  const CATOF = {};                       // id -> category, needed before a garment is picked
+  CATALOGUE.forEach(g => g.items.forEach(i => { ITEMS[i.id] = i; CATOF[i.id] = g.cat; }));
 
   function svgFor(g) {
     const a = ART[g.art] || ART.dress;
@@ -1536,7 +1637,7 @@
 
   // render catalogue grouped by category
   cats.innerHTML = CATALOGUE.map(group => `
-    <div class="catwrap">
+    <div class="catwrap" data-cat="${group.cat}">
       <p class="cathead">${group.cat}</p>
       <p class="catsub">${group.sub}</p>
       <div class="garments">
@@ -1580,28 +1681,91 @@
 
   function el(id) { return cats.querySelector(`[data-id="${id}"]`); }
 
+
+  function counts(extraCat, extra) {
+    const t = { Tops: 0, Trousers: 0, Dresses: 0 };
+    Object.keys(picks).forEach(id => { t[picks[id].cat] += picks[id].qty; });
+    if (extraCat) t[extraCat] += (extra || 0);
+    return t;
+  }
+
+  const setsFrom = t => Math.max(t.Tops, t.Trousers) + t.Dresses;
+  const setsUsed = () => setsFrom(counts());
+
+  // Adding a top when bottoms already outnumber tops is free: it pairs with a
+  // bottom that is currently on its own.
+  const canAdd = cat => setsFrom(counts(cat, 1)) <= MAXSETS;
+
+  const allow = document.getElementById('allow');
+  const allowused = document.getElementById('allowused');
+
+  function refreshLimits() {
+    const used = setsUsed(), left = MAXSETS - used;
+    // Categories that can still take one more. Using up the 3 sets is not the
+    // same as being finished: 3 tops fills all 3 sets, but each of those sets
+    // is still only a top, so 3 trousers can join them at no extra cost. The
+    // green tick therefore waits until nothing at all can be added, not until
+    // the set count reaches MAXSETS.
+    const open = CATALOGUE.map(g => g.cat).filter(canAdd);
+
+    if (!open.length) {
+      allowused.innerHTML = `<span class="tick">&check;</span>All ${MAXSETS} sets complete`;
+      allow.setAttribute('data-full', '');
+    } else {
+      allow.removeAttribute('data-full');
+      allowused.textContent = left > 0
+        ? `${used} of ${MAXSETS} sets used \u00b7 ${left} left`
+        : `${used} of ${MAXSETS} sets used \u00b7 you can still add `
+          + open.map(c => c.toLowerCase()).join(' or ');
+    }
+
+    document.querySelectorAll('.garment').forEach(card => {
+      const id = card.dataset.id, cat = CATOF[id];
+      const room = canAdd(cat);
+      if (card.dataset.on === '1') {
+        card.removeAttribute('data-blocked');
+        const plus = card.querySelector('[data-plus]');
+        if (plus) plus.disabled = picks[id].qty >= MAXQ || !room;
+      } else {
+        // an unpicked garment its category has no room for
+        if (room) card.removeAttribute('data-blocked');
+        else card.dataset.blocked = '1';
+      }
+    });
+  }
+
+  function nudgeAllowance() {
+    allow.setAttribute('data-flash', '');
+    allow.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    setTimeout(() => allow.removeAttribute('data-flash'), 500);
+  }
+
   window.toggleGarment = function (id) {
     const card = el(id); const on = card.dataset.on === '1';
+    const cat = CATOF[id];
+    // adding, but this category has no room left
+    if (!on && !canAdd(cat)) { nudgeAllowance(); return; }
     card.dataset.on = on ? '0' : '1';
     if (on) delete picks[id];
     else {
-      const cat = CATALOGUE.find(g => g.items.some(i => i.id === id)).cat;
       picks[id] = { label: labels[id], cat, size: null, unsure: false, qty: 1, m: {} };
       card.querySelector('[data-q]').textContent = '1';
       card.querySelector('[data-minus]').disabled = true;
       card.querySelector('[data-plus]').disabled = false;
     }
+    refreshLimits();
     check();
   };
 
 
   window.bump = function (id, delta) {
     const p = picks[id]; if (!p) return;
+    if (delta > 0 && !canAdd(p.cat)) { nudgeAllowance(); return; }
     p.qty = Math.min(MAXQ, Math.max(1, p.qty + delta));
     const card = el(id);
     card.querySelector('[data-q]').textContent = p.qty;
     card.querySelector('[data-minus]').disabled = p.qty === 1;
-    card.querySelector('[data-plus]').disabled = p.qty === MAXQ;
+    refreshLimits();
     check();
   };
 
@@ -1702,11 +1866,15 @@
       const ids = Object.keys(picks);
       // NOTE: ids are strings, so they must be mapped back to the pick object
       // before completeness is checked (previously complete1 received the id).
-      const allOk = ids.length > 0 && ids.every(id => complete1(picks[id]));
+      // The set cap is re-checked here rather than trusted from the UI, so a
+      // selection can never be submitted over the limit.
+      const allOk = ids.length > 0 && ids.every(id => complete1(picks[id]))
+        && setsUsed() <= MAXSETS;
       if (ids.length) {
         summary.style.display = 'block';
         const total = ids.reduce((n, id) => n + picks[id].qty, 0);
         sumrows.innerHTML = ids.map(id => line(labels[id], describe(picks[id]), false, false)).join('')
+          + line('Sets used', setsUsed() + ' of ' + MAXSETS, false, false)
           + line('Total items', total, false, true);
       } else summary.style.display = 'none';
       pathOk = allOk;
@@ -1715,6 +1883,8 @@
     }
     submit.disabled = !(who && CHOICE && pathOk);
   }
+
+  refreshLimits();   // set the initial allowance display
 
   // Swap the wordmark for the real logo only after the image has loaded, so a
   // missing or blocked file leaves the wordmark in place instead of showing a
